@@ -21,8 +21,8 @@
 /frontend/build
 
 # misc
-/frontend/.DS_Store
-/frontend/*.pem
+.DS_Store
+*.pem
 
 # debug
 /frontend/npm-debug.log*
