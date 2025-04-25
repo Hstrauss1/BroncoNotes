@@ -10,6 +10,7 @@ import {
 } from "../../components/ui/command";
 import { useCommandMenu } from "@/app/store";
 import { useShallow } from "zustand/shallow";
+import { ArrowRight, LogOut, PlusSquare, Search, Sidebar } from "lucide-react";
 
 export function CommandMenu() {
   const { open, setOpen } = useCommandMenu(
@@ -33,15 +34,36 @@ export function CommandMenu() {
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
-      <CommandInput placeholder="Create or search note..." />
+      <CommandInput placeholder="Search commands..." />
+      <CommandEmpty>No results found.</CommandEmpty>
       <CommandList>
-        <CommandEmpty>
-          <CommandItem>Create Note</CommandItem>
-        </CommandEmpty>
-        <CommandGroup heading="Suggestions">
-          <CommandItem>Calendar</CommandItem>
-          <CommandItem>Search Emoji</CommandItem>
-          <CommandItem>Calculator</CommandItem>
+        <CommandGroup heading="Actions">
+          <CommandItem>
+            <PlusSquare />
+            Create Note
+          </CommandItem>
+          <CommandItem>
+            <Search />
+            Search Note
+          </CommandItem>
+          <CommandItem>
+            <Sidebar />
+            Toggle Sidebar
+          </CommandItem>
+          <CommandItem>
+            <LogOut />
+            Log Out
+          </CommandItem>
+        </CommandGroup>
+        <CommandGroup heading="Navigation">
+          <CommandItem>
+            <ArrowRight />
+            My Notes
+          </CommandItem>
+          <CommandItem>
+            <ArrowRight />
+            Liked Notes
+          </CommandItem>
         </CommandGroup>
       </CommandList>
     </CommandDialog>

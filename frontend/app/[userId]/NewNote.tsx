@@ -14,7 +14,7 @@ export const NewNote = () => {
       New Note
       <kbd className="*:bg-neutral-200 *:size-5 *:rounded-sm *:flex *:items-center *:justify-center *:leading-3 flex items-center gap-0.5 h-fit font-normal absolute right-2 top-1.5 transition-opacity opacity-100 group-hover/newnote:opacity-0">
         <span className="text-base mt-[0.5px]">⌘</span>
-        <span className="text-xs">K</span>
+        <span className="text-xs">O</span>
       </kbd>
     </SidebarMenuButton>
   );
