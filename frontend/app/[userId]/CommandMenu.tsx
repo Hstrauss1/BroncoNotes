@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   CommandDialog,
   CommandEmpty,
@@ -7,27 +7,37 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "./ui/command";
+} from "../../components/ui/command";
+import { useCommandMenu } from "@/app/store";
+import { useShallow } from "zustand/shallow";
 
 export function CommandMenu() {
-  const [open, setOpen] = useState(false);
+  const { open, setOpen } = useCommandMenu(
+    useShallow((state) => ({
+      open: state.open,
+      setOpen: state.setOpen,
+    })),
+  );
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        setOpen((open) => !open);
+        setOpen(!open);
       }
     };
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
-      <CommandInput placeholder="Type a command or search..." />
+      <CommandInput placeholder="Create or search note..." />
       <CommandList>
-        <CommandEmpty>No results found.</CommandEmpty>
+        <CommandEmpty>
+          <CommandItem>Create Note</CommandItem>
+        </CommandEmpty>
         <CommandGroup heading="Suggestions">
           <CommandItem>Calendar</CommandItem>
           <CommandItem>Search Emoji</CommandItem>

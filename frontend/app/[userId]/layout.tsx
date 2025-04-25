@@ -1,25 +1,26 @@
-import { CommandMenu } from "@/components/CommandMenu";
-import Link from "next/link";
+import { CommandMenu } from "@/app/[userId]/CommandMenu";
+import { cookies } from "next/headers";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "./AppSidebar";
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+export default async function AppLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const cookieStore = await cookies();
+  const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
+
   return (
-    <section className="flex">
-      <aside className="w-72 sticky top-0 h-screen">
-        <nav className="w-full h-full bg-neutral-100 border-r border-neutral-200 p-6">
-          <ul>
-            <li>
-              <Link href="/dashboard">Dashboard</Link>
-            </li>
-            <li>
-              <Link href="/settings">Settings</Link>
-            </li>
-          </ul>
-        </nav>
-      </aside>
-      <main className="left-72 min-h-screen">
+    <SidebarProvider defaultOpen={defaultOpen}>
+      <AppSidebar />
+      <main className="flex flex-col flex-1">
+        <div className="p-2.5">
+          <SidebarTrigger />
+        </div>
         {children}
         <CommandMenu />
       </main>
-    </section>
+    </SidebarProvider>
   );
 }
