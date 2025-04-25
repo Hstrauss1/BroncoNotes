@@ -1,3 +1,4 @@
+import { CommandMenu } from "@/components/CommandMenu";
 import Link from "next/link";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -15,7 +16,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </ul>
         </nav>
       </aside>
-      <main className="left-72 min-h-screen">{children}</main>
+      <main className="left-72 min-h-screen">
+        {children}
+        <CommandMenu />
+      </main>
     </section>
   );
 }
