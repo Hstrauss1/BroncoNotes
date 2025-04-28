@@ -22,31 +22,13 @@ def get_time():
 
 
 @app.route('/')
-def index():
+def account_json():
     account, columns = fetch_accounts()  # prints row but doesn't show here
-    print("Account passed to template:", account)
-    print("Columns:", columns)
-    return render_template_string('''
-        <h1>Account List</h1>
-        {% if account %}
-            <table border="1">
-                <tr>
-                    {% for col in columns %}
-                        <th>{{ col }}</th>
-                    {% endfor %}
-                </tr>
-                {% for row in account %}
-                <tr>
-                    {% for item in row %}
-                        <td>{{ item }}</td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-            </table>
-        {% else %}
-            <p>No accounts found.</p>
-        {% endif %}
-    ''', account=account, columns=columns)
+    account_list = []
+    for row in account:
+        account_dict = dict(zip(columns, row))
+        account_list.append(account_dict)
+    return jsonify(account_list)
 
 # Run app
 if __name__ == "__main__":

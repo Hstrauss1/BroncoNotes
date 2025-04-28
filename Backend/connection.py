@@ -22,8 +22,7 @@ def get_db_connection():
 def fetch_accounts():
     connection = get_db_connection()
     if connection is None:
-        return []
-
+        return [] 
     try:
         cursor = connection.cursor()
         cursor.execute('SELECT * FROM public."Account";')
