@@ -1,4 +1,5 @@
 from flask import Flask, jsonify
+import supabase #pip3 install supabase
 
 def upload_pdf_to_bucket(file_path: str, user_id: str):
     import uuid
@@ -27,16 +28,3 @@ def create_note(user_id: str, title: str, storage_path: str): #create note insid
     return note_id
   
 #FLASK UPLOAD CODE iht
-@app.route("/upload-note", methods=["POST"])
-def upload_note():
-    file = request.files["pdf"]
-    title = request.form["title"]
-    user_id = request.form["user_id"]
-
-    temp_path = f"/tmp/{file.filename}"
-    file.save(temp_path)
-
-    storage_path = upload_pdf_to_bucket(temp_path, user_id)
-    note_id = create_note(user_id, title, storage_path)
-
-    return jsonify({"note_id": note_id, "pdf_path": storage_path})

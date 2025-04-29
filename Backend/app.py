@@ -1,6 +1,6 @@
 from flask import Flask, jsonify
 from connection import get_db_connection, fetch_accounts
-
+import UploadPdf
 
 app = Flask(__name__)
 
@@ -30,6 +30,22 @@ def account_json():
         account_list.append(account_dict)
     return jsonify(account_list)
 
+@app.route("/upload-note", methods=["POST"])
+def upload_note():
+    file = request.files["pdf"]
+    title = request.form["title"]
+    user_id = request.form["user_id"]
+
+    temp_path = f"/tmp/{file.filename}"
+    file.save(temp_path)
+
+    storage_path = upload_pdf_to_bucket(temp_path, user_id)
+    note_id = create_note(user_id, title, storage_path)
+    
+    return jsonify({"note_id": note_id, "pdf_path": storage_path})
+
+
 # Run app
 if __name__ == "__main__":
     app.run(debug=True)
+
