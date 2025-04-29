@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template_string
+from flask import Flask, jsonify
 from connection import get_db_connection, fetch_accounts
 
 
@@ -23,7 +23,7 @@ def get_time():
 
 @app.route('/')
 def account_json():
-    account, columns = fetch_accounts()  # prints row but doesn't show here
+    account, columns = fetch_accounts() 
     account_list = []
     for row in account:
         account_dict = dict(zip(columns, row))
