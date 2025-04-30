@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { useActionState } from "react";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
+import Logo from "../../public/Notex_Logo.svg";
+import Image from "next/image";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -31,7 +33,7 @@ export default function SignInPage() {
           {
             email,
             password,
-          },
+          }
         );
 
         if (authError) {
@@ -68,13 +70,14 @@ export default function SignInPage() {
         toast("Unexpected error occurred.");
       }
     },
-    null,
+    null
   );
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <section className="min-w-80 grid gap-12">
-        <hgroup className="flex items-center justify-center flex-col gap-2">
+      <section className="min-w-80 grid gap-8">
+        <hgroup className="flex items-center justify-center flex-col gap-3">
+          <Image src={Logo} width={120} height={120} alt="Notex Logo" />
           <h1>Notex</h1>
           <p>Create an account on Notex</p>
         </hgroup>
