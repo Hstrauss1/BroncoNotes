@@ -9,6 +9,7 @@
 !/frontend/.yarn/plugins
 !/frontend/.yarn/releases
 !/frontend/.yarn/versions
+/backend/.venv
 
 # testing
 /frontend/coverage
