@@ -17,7 +17,7 @@ export default function SignInPage() {
     async (prev: unknown, formData: FormData) => {
       try {
         // Generate a unique user ID
-        const userId = uuidv4();
+        // const userId = uuidv4();
         const email = String(formData.get("email"));
         const username = String(formData.get("username"));
         const password = String(formData.get("password"));
@@ -40,9 +40,9 @@ export default function SignInPage() {
           toast(`Sign-up error: ${authError.message}`);
           return;
         }
-
+  
         toast("Sign-up successful!");
-
+        const userId = authData.user?.id;
         // Store user details in the custom table
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { data: insertData, error: insertError } = await supabase
