@@ -1,40 +1,37 @@
-import psycopg2
+from supabase import create_client, Client
 from dotenv import load_dotenv
 import os
+from postgrest.exceptions import APIError
 
 load_dotenv()
 
-def get_db_connection():
-    try:
-        connection = psycopg2.connect(
-            user=os.getenv("user"),
-            password=os.getenv("password"),
-            host=os.getenv("host"),
-            port=os.getenv("port"),
-            dbname=os.getenv("dbname"),
-            sslmode='require'
-        )
-        return connection
-    except Exception as e:
-        print(f"Database connection failed: {e}")
-        return None
+def get_supabase_client() -> Client:
+    url = os.getenv("SUPABASE_URL")
+    key = os.getenv("SUPABASE_ANON_KEY")
+    if url is None or key is None:
+        raise RuntimeError("SUPABASE_URL and SUPABASE_ANON_KEY must be set")
+    return create_client(url, key)
 
 def fetch_accounts():
-    connection = get_db_connection()
-    if connection is None:
-        return [] 
+    supabase = get_supabase_client()
+
     try:
-        cursor = connection.cursor()
-        cursor.execute('SELECT * FROM public."Account";')
-        rows = cursor.fetchall()
-        column_names = [desc[0] for desc in cursor.description]
-        print("Fetched rows:", rows)
-        print("Column names:", column_names)
-        return rows, column_names
+        # this will raise a PostgrestError if the HTTP request fails
+        response = supabase.table("Account").select("*").execute()
+    except APIError as e:
+        print(f"Supabase API error: {e.code} – {e.message}")
+        return [], []
     except Exception as e:
-        print(f"Query failed: {e}")
-        return []
-    finally:
-        if connection:
-            cursor.close()
-            connection.close()
+        print(f"Unexpected error: {e}")
+        return [], []
+
+    # At this point execute() succeeded with a 2xx
+    rows = response.data or []                # type: ignore[attr-defined]
+    column_names = list(rows[0].keys()) if rows else []
+
+    print("Fetched rows:", rows)
+    print("Column names:", column_names)
+    return rows, column_names
+
+if __name__ == "__main__":
+    fetch_accounts()

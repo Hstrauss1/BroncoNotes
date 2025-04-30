@@ -1,5 +1,7 @@
 from flask import Flask, jsonify
-import supabase #pip3 install supabase
+from connection import get_supabase_client
+
+supabase = get_supabase_client()
 
 def upload_pdf_to_bucket(file_path: str, user_id: str):
     import uuid
