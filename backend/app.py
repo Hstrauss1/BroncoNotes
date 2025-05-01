@@ -1,6 +1,8 @@
 from flask import Flask, jsonify, request
-from backend.UploadPdf import create_note, upload_pdf_to_bucket
-from backend.auth import require_auth
+from flask.helpers import abort
+from UploadPdf import create_note, upload_pdf_to_bucket
+from auth import require_auth
+from user import fetch_user_by_id
 from connection import get_supabase_client, fetch_accounts
 
 app = Flask(__name__)
@@ -13,6 +15,14 @@ supabase = get_supabase_client()
 def account_json():
     accounts = fetch_accounts()
     return jsonify(accounts)
+
+@app.route("/user/<user_id>", methods=["GET"])
+@require_auth
+def get_user(user_id):
+    user = fetch_user_by_id(user_id)
+    if user is None:
+        abort(404, description="User not found")
+    return jsonify(user)
 
 # Need to update using the supabase python client
 @app.route("/upload-note", methods=["POST"])

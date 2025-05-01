@@ -1,10 +1,9 @@
 # test_upload.py
 from dotenv import load_dotenv
-import os
 from supabase import AuthApiError
 from UploadPdf import supabase, upload_pdf_to_bucket, create_note
 
-load_dotenv() 
+load_dotenv()
 
 def main():
     try:
