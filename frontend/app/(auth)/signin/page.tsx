@@ -16,10 +16,7 @@ export default function SignInPage() {
   const [state, action, isPending] = useActionState(
     async (prev: unknown, formData: FormData) => {
       try {
-        // Generate a unique user ID
-        // const userId = uuidv4();
         const email = String(formData.get("email"));
-        const username = String(formData.get("username"));
         const password = String(formData.get("password"));
 
         if (!email.trim().toLowerCase().endsWith(".edu")) {
@@ -28,48 +25,27 @@ export default function SignInPage() {
         }
 
         // Sign up user using Supabase Auth
-        const { data: authData, error: authError } = await supabase.auth.signUp(
-          {
+        const { data: authData, error: authError } =
+          await supabase.auth.signInWithPassword({
             email,
             password,
-          }
-        );
+          });
 
         if (authError) {
-          toast(`Sign-up error: ${authError.message}`);
+          toast(`Sign-in error: ${authError.message}`);
           return;
         }
 
-        toast("Sign-up successful!");
-        const userId = authData.user?.id;
-        // Store user details in the custom table
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { data: insertData, error: insertError } = await supabase
-          .from("Account")
-          .insert([
-            {
-              user_id: userId,
-              email: email,
-              username: username,
-              password: password, // For security, store hashed passwords instead of plaintext
-              points_tot: 0,
-              total_uploaded: 0,
-            },
-          ]);
-
-        if (insertError) {
-          toast(`Error storing user details: ${insertError.message}`);
-          return;
-        }
+        toast("Sign-in successful!");
 
         toast("User details successfully stored!");
-        router.push(`/${userId}`);
+        router.push(`/${authData.user.id}`);
       } catch (error) {
         console.error("Unexpected error:", error);
         toast("Unexpected error occurred.");
       }
     },
-    null
+    null,
   );
 
   return (
@@ -81,7 +57,6 @@ export default function SignInPage() {
       </hgroup>
       <form action={action} className="grid gap-12">
         <div className="grid gap-2">
-          <Input type="text" name="username" placeholder="Username" required />
           <Input type="email" name="email" placeholder="Email" required />
           <Input
             type="password"
