@@ -6,8 +6,9 @@ import { LogIn } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useActionState } from "react";
 import { toast } from "sonner";
-import Logo from "../../public/Notex_Logo.svg";
+import Logo from "../../../public/Notex_Logo.svg";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -31,7 +32,7 @@ export default function SignInPage() {
           {
             email,
             password,
-          },
+          }
         );
 
         if (authError) {
@@ -68,39 +69,36 @@ export default function SignInPage() {
         toast("Unexpected error occurred.");
       }
     },
-    null,
+    null
   );
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <section className="min-w-80 grid gap-8">
-        <hgroup className="flex items-center justify-center flex-col gap-3">
-          <Image src={Logo} width={120} height={120} alt="Notex Logo" />
-          <h1>Notex</h1>
-          <p>Create an account on Notex</p>
-        </hgroup>
-        <form action={action} className="grid gap-12">
-          <div className="grid gap-2">
-            <Input
-              type="text"
-              name="username"
-              placeholder="Username"
-              required
-            />
-            <Input type="email" name="email" placeholder="Email" required />
-            <Input
-              type="password"
-              name="password"
-              placeholder="Password"
-              required
-            />
-          </div>
-          <Button type="submit" disabled={isPending}>
-            <LogIn />
-            {isPending ? "Creating Account..." : "Sign Up"}
-          </Button>
-        </form>
-      </section>
-    </div>
+    <section className="min-w-80 grid gap-6">
+      <hgroup className="flex items-center justify-center flex-col gap-3">
+        <Image src={Logo} width={120} height={120} alt="Notex Logo" />
+        <h1>Notex</h1>
+        <p>Sign in to Notex</p>
+      </hgroup>
+      <form action={action} className="grid gap-12">
+        <div className="grid gap-2">
+          <Input type="text" name="username" placeholder="Username" required />
+          <Input type="email" name="email" placeholder="Email" required />
+          <Input
+            type="password"
+            name="password"
+            placeholder="Password"
+            required
+          />
+        </div>
+        <Button type="submit" disabled={isPending}>
+          <LogIn />
+          {isPending ? "Creating Account..." : "Sign In"}
+        </Button>
+      </form>
+
+      <Link href={"/signup"} className="text-center text-blue-500 text-sm">
+        Sign Up Here
+      </Link>
+    </section>
   );
 }
