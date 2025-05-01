@@ -32,7 +32,20 @@ const items = [
   },
 ];
 
-export function AppSidebar({ userId }: { userId: string }) {
+type User = {
+  email: string;
+  points_tot: number;
+  user_id: string;
+  username: string;
+};
+
+export async function AppSidebar({ userId }: { userId: string }) {
+  const user = await fetch(
+    `${process.env.NEXT_PUBLIC_FRONTEND_ENDPOINT}api/get-user?user-id=${userId}`
+  );
+  const data = await user.json();
+  console.log(data);
+
   return (
     <Sidebar>
       <SidebarContent>
@@ -62,7 +75,8 @@ export function AppSidebar({ userId }: { userId: string }) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
-                  <User2 /> {userId}
+                  <User2 />
+                  Username
                   <ChevronUp className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
