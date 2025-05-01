@@ -32,7 +32,7 @@ const items = [
   },
 ];
 
-export function AppSidebar() {
+export function AppSidebar({ userId }: { userId: string }) {
   return (
     <Sidebar>
       <SidebarContent>
@@ -62,7 +62,7 @@ export function AppSidebar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
-                  <User2 /> Username
+                  <User2 /> {userId}
                   <ChevronUp className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
