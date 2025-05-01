@@ -6,7 +6,6 @@ import { LogIn } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useActionState } from "react";
 import { toast } from "sonner";
-import { v4 as uuidv4 } from "uuid";
 import Logo from "../../public/Notex_Logo.svg";
 import Image from "next/image";
 
@@ -17,7 +16,7 @@ export default function SignInPage() {
     async (prev: unknown, formData: FormData) => {
       try {
         // Generate a unique user ID
-        const userId = uuidv4();
+        // const userId = uuidv4();
         const email = String(formData.get("email"));
         const username = String(formData.get("username"));
         const password = String(formData.get("password"));
@@ -28,12 +27,11 @@ export default function SignInPage() {
         }
 
         // Sign up user using Supabase Auth
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { data: authData, error: authError } = await supabase.auth.signUp(
           {
             email,
             password,
-          }
+          },
         );
 
         if (authError) {
@@ -42,7 +40,7 @@ export default function SignInPage() {
         }
 
         toast("Sign-up successful!");
-
+        const userId = authData.user?.id;
         // Store user details in the custom table
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { data: insertData, error: insertError } = await supabase
@@ -70,7 +68,7 @@ export default function SignInPage() {
         toast("Unexpected error occurred.");
       }
     },
-    null
+    null,
   );
 
   return (
