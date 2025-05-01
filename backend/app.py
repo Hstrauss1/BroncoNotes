@@ -1,4 +1,6 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
+from backend.UploadPdf import create_note, upload_pdf_to_bucket
+from backend.auth import require_auth
 from connection import get_supabase_client, fetch_accounts
 
 app = Flask(__name__)
@@ -7,6 +9,7 @@ app = Flask(__name__)
 supabase = get_supabase_client()
 
 @app.route('/')
+@require_auth
 def account_json():
     accounts = fetch_accounts()
     return jsonify(accounts)

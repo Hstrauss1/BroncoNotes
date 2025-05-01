@@ -6,7 +6,6 @@ import { LogIn } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useActionState } from "react";
 import { toast } from "sonner";
-import { v4 as uuidv4 } from "uuid";
 import Logo from "../../public/Notex_Logo.svg";
 import Image from "next/image";
 
@@ -28,19 +27,18 @@ export default function SignInPage() {
         }
 
         // Sign up user using Supabase Auth
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { data: authData, error: authError } = await supabase.auth.signUp(
           {
             email,
             password,
-          }
+          },
         );
 
         if (authError) {
           toast(`Sign-up error: ${authError.message}`);
           return;
         }
-  
+
         toast("Sign-up successful!");
         const userId = authData.user?.id;
         // Store user details in the custom table
@@ -70,7 +68,7 @@ export default function SignInPage() {
         toast("Unexpected error occurred.");
       }
     },
-    null
+    null,
   );
 
   return (
