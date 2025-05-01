@@ -17,6 +17,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
+import { supabase } from "@/lib/supabaseClient";
 
 // Menu items.
 const items = [
@@ -32,19 +33,22 @@ const items = [
   },
 ];
 
-type User = {
-  email: string;
-  points_tot: number;
-  user_id: string;
-  username: string;
-};
-
 export async function AppSidebar({ userId }: { userId: string }) {
-  const user = await fetch(
-    `${process.env.NEXT_PUBLIC_FRONTEND_ENDPOINT}api/get-user?user-id=${userId}`
-  );
-  const data = await user.json();
+  const { data } = await supabase.auth.getSession();
   console.log(data);
+  const jwt = data.session?.access_token;
+  console.log("JWT: ", jwt);
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/user/${userId}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    },
+  );
+  const user = await res.json();
+  console.log(user);
 
   return (
     <Sidebar>
