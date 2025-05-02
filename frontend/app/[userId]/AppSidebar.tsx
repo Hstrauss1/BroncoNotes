@@ -1,4 +1,12 @@
-import { ChevronUp, File, Heart, LogOut, Settings } from "lucide-react";
+import {
+  ChevronUp,
+  File,
+  Heart,
+  LogOut,
+  MoreHorizontal,
+  MoreVertical,
+  Settings,
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -19,6 +27,7 @@ import {
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { User } from "@supabase/supabase-js";
 import Image from "next/image";
+import Link from "next/link";
 
 // Menu items.
 const items = [
@@ -47,10 +56,10 @@ export async function AppSidebar({ user }: { user: User }) {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                    <Link href={`/${user.id}/${item.url}`}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -58,7 +67,7 @@ export async function AppSidebar({ user }: { user: User }) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="px-3">
+      <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
@@ -68,11 +77,11 @@ export async function AppSidebar({ user }: { user: User }) {
                     src={user.user_metadata.avatar_url}
                     className="rounded-full"
                     alt="Avatar image"
-                    width={20}
-                    height={20}
+                    width={18}
+                    height={18}
                   />
                   {user.user_metadata.full_name}
-                  <ChevronUp className="ml-auto" />
+                  <MoreHorizontal className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent side="top" className="w-full">
