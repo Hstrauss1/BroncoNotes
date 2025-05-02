@@ -1,4 +1,4 @@
-import { ChevronUp, File, Heart, LogOut, Settings, User2 } from "lucide-react";
+import { ChevronUp, File, Heart, LogOut, Settings } from "lucide-react";
 
 import {
   Sidebar,
@@ -17,7 +17,8 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
-import { supabase } from "@/lib/supabaseClient";
+import { User } from "@supabase/supabase-js";
+import Image from "next/image";
 
 // Menu items.
 const items = [
@@ -33,23 +34,7 @@ const items = [
   },
 ];
 
-export async function AppSidebar({ userId }: { userId: string }) {
-  const { data } = await supabase.auth.getSession();
-  console.log(data);
-  const jwt = data.session?.access_token;
-  console.log("JWT: ", jwt);
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/user/${userId}`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${jwt}`,
-      },
-    },
-  );
-  const user = await res.json();
-  console.log(user);
-
+export async function AppSidebar({ user }: { user: User }) {
   return (
     <Sidebar>
       <SidebarContent>
@@ -79,8 +64,14 @@ export async function AppSidebar({ userId }: { userId: string }) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
-                  <User2 />
-                  Username
+                  <Image
+                    src={user.user_metadata.avatar_url}
+                    className="rounded-full"
+                    alt="Avatar image"
+                    width={20}
+                    height={20}
+                  />
+                  {user.user_metadata.full_name}
                   <ChevronUp className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>

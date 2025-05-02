@@ -2,6 +2,8 @@ import { CommandMenu } from "@/app/[userId]/CommandMenu";
 import { cookies } from "next/headers";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 
 export default async function AppLayout({
   children,
@@ -13,10 +15,15 @@ export default async function AppLayout({
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
   const { userId } = await params;
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user || userId !== user.id) redirect("/signin");
 
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
-      <AppSidebar userId={userId} />
+      <AppSidebar user={user} />
       <main className="flex flex-col flex-1">
         <div className="p-2.5">
           <SidebarTrigger />
