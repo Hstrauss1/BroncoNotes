@@ -3,8 +3,8 @@ export default async function NotePage({
 }: {
   params: Promise<{ userId: string; noteId: string }>;
 }) {
-  const { userId, noteId } = await params;
-  console.log(userId, noteId);
+  const { userId } = await params;
+  console.log(userId);
   return (
     <div>
       <hgroup className="p-6">

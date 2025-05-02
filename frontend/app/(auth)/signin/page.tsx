@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-export default function SignInPage() {
+export default async function SignInPage() {
   const signIn = async () => {
     "use server";
     const supabase = await createClient();
@@ -22,16 +22,6 @@ export default function SignInPage() {
     if (error) {
       console.log(error);
     } else {
-      // const { data } = await supabase.from("Account").insert([
-      //   {
-      //     user_id: userData.,
-      //     email: email,
-      //     username: username,
-      //     password: password, // For security, store hashed passwords instead of plaintext
-      //     points_tot: 0,
-      //     total_uploaded: 0,
-      //   },
-      // ]);
       return redirect(data.url);
     }
   };

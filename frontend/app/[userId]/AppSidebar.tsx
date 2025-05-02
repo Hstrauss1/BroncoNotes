@@ -1,12 +1,4 @@
-import {
-  ChevronUp,
-  File,
-  Heart,
-  LogOut,
-  MoreHorizontal,
-  MoreVertical,
-  Settings,
-} from "lucide-react";
+import { File, Heart, LogOut, MoreHorizontal, Settings } from "lucide-react";
 
 import {
   Sidebar,
@@ -33,7 +25,7 @@ import Link from "next/link";
 const items = [
   {
     title: "Notes",
-    url: "/notes",
+    url: "notes",
     icon: File,
   },
   {
@@ -84,7 +76,11 @@ export async function AppSidebar({ user }: { user: User }) {
                   <MoreHorizontal className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
-              <DropdownMenuContent side="top" className="w-full">
+              <DropdownMenuContent
+                side="top"
+                sideOffset={6}
+                className="w-[15rem]"
+              >
                 <DropdownMenuItem>
                   <Settings />
                   <span>Settings</span>

@@ -1,8 +1,7 @@
 from flask import Flask, jsonify, request
 from flask.helpers import abort
 from UploadPdf import create_note, upload_pdf_to_bucket
-from auth import require_auth
-from user import fetch_user_by_id
+from user import fetch_user_by_id, get_or_create_user
 from connection import get_supabase_client, fetch_accounts
 
 app = Flask(__name__)
@@ -11,13 +10,25 @@ app = Flask(__name__)
 supabase = get_supabase_client()
 
 @app.route('/')
-@require_auth
 def account_json():
     accounts = fetch_accounts()
     return jsonify(accounts)
 
+@app.route("/initialize-user", methods=["POST"])
+def init_user():
+    body = request.get_json()
+    user_id = body.get("user_id")
+
+    if not user_id:
+        return jsonify({"error": "Missing user_id in request body"}), 400
+
+    user = get_or_create_user(user_id, 10)
+    if user is None:
+        return jsonify({"error": "Could not fetch or create user"}), 500
+
+    return jsonify(user)
+
 @app.route("/user/<user_id>", methods=["GET"])
-@require_auth
 def get_user(user_id):
     user = fetch_user_by_id(user_id)
     if user is None:

@@ -11,14 +11,13 @@ def fetch_user_by_id(user_id: str) -> Optional[Dict[str, Any]]:
       - None if no such user or on error
     """
     supabase = get_supabase_client()
-    print(user_id)
 
     try:
         # only select the non-sensitive columns
         response = (
             supabase
               .table("Account")
-              .select("user_id, username, points_tot, email")
+              .select("user_id, points_tot")
               .eq("user_id", user_id)
               .single()
               .execute()
@@ -36,3 +35,42 @@ def fetch_user_by_id(user_id: str) -> Optional[Dict[str, Any]]:
         return None
 
     return data
+
+def get_or_create_user(user_id: str, initial_points: int = 0) -> Optional[Dict[str, Any]]:
+    """
+    Fetches a user by user_id; creates them with default points if they don't exist.
+    """
+    supabase = get_supabase_client()
+
+    # First, try to fetch the user by user_id
+    user = fetch_user_by_id(user_id)
+    if user:
+        # If the user exists, return the user's data
+        return user
+
+    # If user doesn't exist, create a new one
+    try:
+        # Insert a new user with default points (0)
+        response = (
+            supabase
+              .table("Account")
+              .insert({
+                  "user_id": user_id,
+                  "points_tot": initial_points
+              })
+              .execute()  # Execute the insert
+        )
+
+        # Check if the insert was successful and return the inserted data
+        if response.data:
+            return response.data[0]  # Return the first inserted row
+
+    except APIError as e:
+        logging.error(f"Supabase API error creating user {user_id}: {e.code} – {e.message}")
+        return None
+    except Exception as e:
+        logging.error(f"Unexpected error creating user {user_id}: {e}")
+        return None
+
+    # If insert failed or there is no data, return None
+    return None
