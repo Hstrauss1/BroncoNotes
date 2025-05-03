@@ -15,7 +15,7 @@ export default function CreatePage() {
   useEffect(() => {
     if (state?.status === "success") {
       toast("Note successfuly created");
-    } else {
+    } else if (state?.status === "error") {
       toast("Something went wrong");
     }
   }, [state]);

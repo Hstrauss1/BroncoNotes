@@ -1,10 +1,17 @@
 from flask import Flask, jsonify, request
 from flask.helpers import abort
 from UploadPdf import create_note, upload_pdf_to_bucket
+from auth import authenticate_request
 from user import fetch_user_by_id, get_or_create_user
-from connection import get_supabase_client
 
 app = Flask(__name__)
+
+@app.before_request
+def before_request():
+    if request.endpoint not in ['static', 'public']:
+        error = authenticate_request()
+        if error:
+            return error
 
 @app.route('/')
 def account_json():
@@ -20,12 +27,7 @@ def init_user():
     if not user_id:
         return jsonify({"error": "Missing user_id in request body"}), 400
 
-    auth_header = request.headers.get("Authorization", "")
-    if not auth_header.startswith("Bearer "):
-        return jsonify({"error": "Missing or bad Authorization header"}), 401
-    user_jwt = auth_header.split("Bearer ", 1)[1]
-
-    user = get_or_create_user(user_jwt,user_id, 10)
+    user = get_or_create_user(user_id, 10)
     if user is None:
         return jsonify({"error": "Could not fetch or create user"}), 500
 
@@ -33,26 +35,13 @@ def init_user():
 
 @app.route("/user/<user_id>", methods=["GET"])
 def get_user(user_id):
-    auth_header = request.headers.get("Authorization", "")
-    if not auth_header.startswith("Bearer "):
-        return jsonify({"error": "Missing or bad Authorization header"}), 401
-    user_jwt = auth_header.split("Bearer ", 1)[1]
-    user = fetch_user_by_id(user_jwt,user_id)
+    user = fetch_user_by_id(user_id)
     if user is None:
         abort(404, description="User not found")
     return jsonify(user)
 
 @app.route("/upload-note", methods=["POST"])
 def upload_note():
-    auth_header = request.headers.get("Authorization", "")
-    if not auth_header.startswith("Bearer "):
-        return jsonify({"error": "Missing or bad Authorization header"}), 401
-    user_jwt = auth_header.split("Bearer ", 1)[1]
-    supabase = get_supabase_client(user_jwt)
-    user_resp = supabase.auth.get_user(user_jwt)
-    if not user_resp:
-        return jsonify({"error": "Invalid token"}), 401
-
     file = request.files["pdf"]
     title = request.form["title"]
     user_id = request.form["user_id"]
@@ -61,14 +50,14 @@ def upload_note():
     file.save(temp_path)
 
     try:
-        storage_path = upload_pdf_to_bucket(user_jwt,temp_path, user_id)
+        storage_path = upload_pdf_to_bucket(temp_path, user_id)
         print("upload_pdf_to_bucket returned:", storage_path)
     except Exception as e:
         print("upload_pdf_to_bucket failed:", e)
         return jsonify({"error": str(e)}), 500
 
     try:
-        note_id = create_note(user_jwt,user_id, title, storage_path)
+        note_id = create_note(user_id, title, storage_path)
         print("create_note returned note_id:", note_id)
     except Exception as e:
         print("create_note failed:", e)

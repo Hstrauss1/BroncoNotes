@@ -1,21 +1,20 @@
+from flask import g
 from typing import Optional, Dict, Any
 from postgrest.exceptions import APIError
-from connection import get_supabase_client
 import logging
 
-def fetch_user_by_id(jwt:str,user_id: str) -> Optional[Dict[str, Any]]:
+def fetch_user_by_id(user_id: str) -> Optional[Dict[str, Any]]:
     """
     Fetch a single user record from the "Account" table by user_id.
     Returns:
       - A dict of that user’s fields (excluding password) on success
       - None if no such user or on error
     """
-    supabase = get_supabase_client(jwt)
 
     try:
         # only select the non-sensitive columns
         response = (
-            supabase
+            g.supabase_client
               .table("Account")
               .select("user_id, points_tot")
               .eq("user_id", user_id)
@@ -36,14 +35,12 @@ def fetch_user_by_id(jwt:str,user_id: str) -> Optional[Dict[str, Any]]:
 
     return data
 
-def get_or_create_user(jwt:str,user_id: str, initial_points: int = 0) -> Optional[Dict[str, Any]]:
+def get_or_create_user(user_id: str, initial_points: int = 0) -> Optional[Dict[str, Any]]:
     """
     Fetches a user by user_id; creates them with default points if they don't exist.
     """
-    supabase = get_supabase_client(jwt)
-
     # First, try to fetch the user by user_id
-    user = fetch_user_by_id(jwt,user_id)
+    user = fetch_user_by_id(user_id)
     if user:
         # If the user exists, return the user's data
         return user
@@ -52,7 +49,7 @@ def get_or_create_user(jwt:str,user_id: str, initial_points: int = 0) -> Optiona
     try:
         # Insert a new user with default points (0)
         response = (
-            supabase
+          g.supabase_client
               .table("Account")
               .insert({
                   "user_id": user_id,

@@ -16,9 +16,10 @@ export default async function AppLayout({
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
   const { userId } = await params;
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = (await supabase.auth.getUser()).data.user;
+
+  console.log(user);
+
   if (!user || userId !== user.id) redirect("/signin");
 
   return (
