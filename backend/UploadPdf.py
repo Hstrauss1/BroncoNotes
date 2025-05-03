@@ -1,7 +1,6 @@
 import uuid
 from flask import g
 
-
 def upload_pdf_to_bucket(file_path: str, user_id: str) -> str:
     file_name = f"{uuid.uuid4()}.pdf"
     storage_path = f"{user_id}/{file_name}"
