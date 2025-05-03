@@ -11,8 +11,10 @@ import {
 import { useCommandMenu } from "@/app/store";
 import { useShallow } from "zustand/shallow";
 import { ArrowRight, LogOut, PlusSquare, Search, Sidebar } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-export function CommandMenu() {
+export function CommandMenu({ userId }: { userId: string }) {
+  const router = useRouter();
   const { open, setOpen } = useCommandMenu(
     useShallow((state) => ({
       open: state.open,
@@ -38,7 +40,12 @@ export function CommandMenu() {
       <CommandEmpty>No results found.</CommandEmpty>
       <CommandList>
         <CommandGroup heading="Actions">
-          <CommandItem>
+          <CommandItem
+            onSelect={() => {
+              router.push(`/${userId}/create`);
+              setOpen(!open);
+            }}
+          >
             <PlusSquare />
             Create Note
           </CommandItem>

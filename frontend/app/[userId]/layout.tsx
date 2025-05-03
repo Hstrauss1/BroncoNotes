@@ -29,7 +29,7 @@ export default async function AppLayout({
           <SidebarTrigger />
         </div>
         {children}
-        <CommandMenu />
+        <CommandMenu userId={userId} />
       </main>
     </SidebarProvider>
   );
