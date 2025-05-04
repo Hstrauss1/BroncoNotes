@@ -1,4 +1,5 @@
 from flask import g
+from interaction import unlocked_note
 
 def update_user_points(user_id, reward=1):
     response = g.supabase_client.table("Account") \
@@ -60,6 +61,7 @@ def check_points(user_id, note_id):
             raise Exception("Insufficient points to unlock note.")
 
         update_user_points(user_id, -note_cost)
+        unlocked_note(user_id, note_id)
         return {"message": "Note unlocked successfully"}
 
     except Exception as e:
