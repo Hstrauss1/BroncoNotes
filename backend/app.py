@@ -5,6 +5,8 @@ from flask.helpers import abort
 from note import create_note, fetch_pdf_from_storage, upload_pdf_to_bucket, fetch_note_by_id
 from auth import authenticate_request
 from user import fetch_user_by_id, get_or_create_user
+from points import update_user_points, update_note_cost, check_points
+from interaction import like_note, comment_note
 
 app = Flask(__name__)
 
@@ -90,6 +92,85 @@ def upload_note():
         return jsonify({"error": str(e)}), 500
 
     return jsonify({"note_id": note_id, "pdf_path": storage_path})
+
+@app.route('/update_points', methods=['POST'])
+def update_points():
+    try:
+        user_id = request.form.get('user_id')
+        reward = request.form.get('reward', default=1, type=int)
+
+        if not user_id:
+            return jsonify({"error": "Missing user_id"}), 400
+
+        data = update_user_points(user_id, reward)
+        return jsonify({"message": "Points updated", "data": data}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/update_cost', methods=['POST'])
+def update_cost():
+    try:
+        note_id = request.form.get('note_id')
+        increment = request.form.get('increment', default=1, type=int)
+
+        if not note_id:
+            return jsonify({"error": "Missing note_id"}), 400
+
+        data = update_note_cost(note_id, increment)
+        return jsonify({"message": "Note cost updated", "data": data}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/unlock_note', methods=['POST'])
+def unlock_note():
+    try:
+        data = request.get_json()
+        user_id = data.get("user_id")
+        note_id = data.get("note_id")
+
+        if not user_id or not note_id:
+            return jsonify({"error": "Missing user_id or note_id"}), 400
+
+        result = check_points(user_id, note_id)
+        return jsonify(result), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+@app.route('/like_note', methods=['POST'])
+def like_note_endpoint():
+    try:
+        data = request.get_json()
+        user_id = data.get("user_id")
+        note_id = data.get("note_id")
+
+        if not user_id or not note_id:
+            return jsonify({"error": "Both user_id and note_id must be provided."}), 400
+
+        response = like_note(user_id, note_id)
+        return jsonify({"message": "Note liked successfully."}), 200
+
+    except Exception as e:
+        return jsonify({"error": f"Failed to like note: {str(e)}"}), 500
+
+@app.route('/comment', methods=['POST'])
+def comment_note_endpoint():
+    try:
+        data = request.get_json()
+        user_id = data.get("user_id")
+        note_id = data.get("note_id")
+        comment_text = data.get("comment_text")
+
+        if not user_id or not note_id or not comment_text:
+            return jsonify({"error": "Missing user_id, note_id, or comment_text"}), 400
+        
+        result = comment_note(user_id, note_id, comment_text)
+        return jsonify({"message": "Comment added successfully", "data": result}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 # Run app
 if __name__ == "__main__":

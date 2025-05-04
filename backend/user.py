@@ -10,7 +10,6 @@ def fetch_user_by_id(user_id: str) -> Optional[Dict[str, Any]]:
       - A dict of that user’s fields (excluding password) on success
       - None if no such user or on error
     """
-
     try:
         # only select the non-sensitive columns
         response = (
