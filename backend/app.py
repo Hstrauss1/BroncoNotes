@@ -5,8 +5,7 @@ from flask.helpers import abort
 from note import create_note, fetch_pdf_from_storage, upload_pdf_to_bucket, fetch_note_by_id
 from auth import authenticate_request
 from user import fetch_user_by_id, get_or_create_user
-from points import update_user_points, update_note_cost, check_points
-from interaction import like_note, comment_note
+from interaction import like_note, comment_note, check_points, update_note_cost, update_user_points
 
 app = Flask(__name__)
 
@@ -29,7 +28,7 @@ def init_user(user_id):
         return jsonify({"error": "Missing user_id in request body"}), 400
 
     data = request.get_json()
-    user = get_or_create_user(user_id, data["avatar"],data["name"], 10)
+    user = get_or_create_user(user_id, data["avatar"], data["name"], 10)
     if user is None:
         return jsonify({"error": "Could not fetch or create user"}), 500
 
@@ -165,7 +164,7 @@ def comment_note_endpoint():
 
         if not user_id or not note_id or not comment_text:
             return jsonify({"error": "Missing user_id, note_id, or comment_text"}), 400
-        
+
         result = comment_note(user_id, note_id, comment_text)
         return jsonify({"message": "Comment added successfully", "data": result}), 200
 
