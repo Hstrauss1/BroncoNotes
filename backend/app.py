@@ -2,7 +2,7 @@ import io
 import os
 from flask import Flask, jsonify, request, send_file
 from flask.helpers import abort
-from note import create_note, fetch_pdf_from_storage, upload_pdf_to_bucket, fetch_note_by_id
+from note import create_note, fetch_note_comments, fetch_pdf_from_storage, upload_pdf_to_bucket, fetch_note_by_id
 from auth import authenticate_request
 from user import fetch_user_by_id, get_or_create_user
 from interaction import like_note, comment_note, check_points, update_note_cost, update_user_points
@@ -47,6 +47,17 @@ def get_note(note_id):
     if note is None:
         abort(404, description="Note not found")
     return jsonify(note)
+
+@app.route('/note/<note_id>/comments/<user_id>', methods=['GET'])
+def get_comments(note_id,user_id):
+    try:
+        result = fetch_note_comments(note_id, user_id)
+        print(result)
+        return jsonify(result), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
 
 @app.route('/storage', methods=['POST'])
 def get_pdf_by_path():
@@ -170,6 +181,7 @@ def comment_note_endpoint():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
 
 # Run app
 if __name__ == "__main__":

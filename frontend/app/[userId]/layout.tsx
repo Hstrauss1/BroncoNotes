@@ -26,7 +26,7 @@ export default async function AppLayout({
         <div className="p-2.5">
           <SidebarTrigger />
         </div>
-        {children}
+        <div className="flex-1">{children}</div>
         <CommandMenu userId={userId} />
       </main>
     </SidebarProvider>

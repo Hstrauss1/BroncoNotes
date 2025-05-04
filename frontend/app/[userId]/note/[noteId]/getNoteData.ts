@@ -1,5 +1,6 @@
 "use server";
 
+import { Comment } from "@/app/types";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
@@ -48,4 +49,25 @@ export const getNotePdfBlob = async (storagePath: string) => {
 
   if (!storageRes.ok) redirect("/error");
   return await storageRes.blob();
+};
+
+export const getNoteComments = async (noteId: string, userId: string) => {
+  const supabase = await createClient();
+  const session = await supabase.auth.getSession();
+  const token = session.data.session?.access_token;
+  const commentsRes = await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/note/${noteId}/comments/${userId}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+  if (!commentsRes.ok) redirect("/error");
+  return (await commentsRes.json()) as {
+    note_comments: Comment[];
+    user_comment: Comment;
+  };
 };

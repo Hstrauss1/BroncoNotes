@@ -37,6 +37,6 @@
 
 @layer components {
   .wm-auto {
-    @apply w-full max-w-[800px] mx-auto;
+    @apply w-full max-w-[750px] mx-auto;
   }
 }

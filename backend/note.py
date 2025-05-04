@@ -74,3 +74,37 @@ def fetch_note_by_id(note_id: str):
         # no user found
         return None
     return data
+
+def fetch_note_comments(note_id: str, exclude_user_id: str):
+    try:
+        response = (
+            g.supabase_client
+            .table("Comment")
+            .select("*")
+            .eq("note_id", note_id)
+            .neq("user_id", exclude_user_id)  # exclude specific user
+            .order("create_time", desc=True)
+            .execute()
+        )
+
+        user_response = (
+            g.supabase_client
+            .table("Comment")
+            .select("*")
+            .eq("note_id", note_id)
+            .eq("user_id", exclude_user_id)
+            .single()
+            .execute()
+        )
+    except APIError as e:
+        logging.error(f"Supabase API error fetching comments for note {note_id}: {e.code} – {e.message}")
+        return None
+    except Exception as e:
+        logging.error(f"Unexpected error fetching comments for note {note_id}: {e}")
+        return None
+
+
+    return {
+        "note_comments": response.data  if hasattr(response, 'data') else None,
+        "user_comment": user_response.data if hasattr(user_response, 'data') else None
+    }
