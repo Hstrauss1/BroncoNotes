@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { Account } from "../types";
 
 export const initializeUser = async (userId: string) => {
   const supabase = await createClient();
@@ -24,7 +25,7 @@ export const initializeUser = async (userId: string) => {
   );
 
   if (!res.ok) redirect("/error");
-  return await res.json();
+  return (await res.json()) as Account;
 };
 
 export const getUser = async (userId: string) => {
@@ -43,5 +44,5 @@ export const getUser = async (userId: string) => {
   );
 
   if (!res.ok) redirect("/error");
-  return await res.json();
+  return (await res.json()) as Account;
 };
