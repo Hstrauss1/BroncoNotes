@@ -32,7 +32,7 @@ export function PdfViewer({ url, className, height }: PdfViewerProps) {
             pageNumber={index + 1}
             renderAnnotationLayer={false}
             renderTextLayer={true}
-            className="border border-zinc-300/70 rounded-sm overflow-clip drop-shadow-xs"
+            className="border border-zinc-300/70 rounded-sm overflow-clip drop-shadow-xs w-fit"
             onClick={() => console.log("Page clicked")}
             height={height}
           />

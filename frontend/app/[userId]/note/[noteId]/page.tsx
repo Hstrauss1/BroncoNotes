@@ -24,7 +24,7 @@ export default async function NotePage({
   return (
     <div className="flex flex-col h-full">
       <div className="bg-gradient-to-t from-neutral-50 to-transparent">
-        <section className="wm-auto flex justify-between gap-12 items-center pt-6 pb-12">
+        <section className="wm-auto flex justify-between gap-12 items-center py-16">
           <div className="grid gap-6 h-fit">
             <hgroup className="grid gap-2">
               <h1>{note.title}</h1>

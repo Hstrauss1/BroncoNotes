@@ -23,7 +23,7 @@ export default async function AppLayout({
     <SidebarProvider defaultOpen={defaultOpen}>
       <AppSidebar userId={userId} />
       <main className="flex flex-col flex-1">
-        <div className="p-2.5">
+        <div className="border-b border-neutral-300/70 bg-white sticky top-0 h-11 flex items-center px-2 z-10">
           <SidebarTrigger />
         </div>
         <div className="flex-1">{children}</div>
