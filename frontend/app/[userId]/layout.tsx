@@ -16,15 +16,12 @@ export default async function AppLayout({
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
   const { userId } = await params;
   const supabase = await createClient();
-  const user = (await supabase.auth.getUser()).data.user;
-
-  console.log(user);
-
-  if (!user || userId !== user.id) redirect("/signin");
+  const currentUser = (await supabase.auth.getUser()).data.user;
+  if (!currentUser || userId !== currentUser.id) redirect("/signin");
 
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
-      <AppSidebar user={user} />
+      <AppSidebar userId={userId} />
       <main className="flex flex-col flex-1">
         <div className="p-2.5">
           <SidebarTrigger />

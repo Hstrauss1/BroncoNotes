@@ -24,7 +24,7 @@ export default function CreatePage() {
     <section className="w-full h-full flex items-center justify-center flex-col gap-10">
       <h1>Create a New Note</h1>
       <form
-        className="grid gap-4 min-w-[30rem] p-6 border border-neutral-300/70 shadow-xs bg-neutral-50 rounded-2xl"
+        className="grid gap-6 min-w-[28rem] p-6 border border-neutral-300/70 shadow-xs bg-white rounded-3xl"
         action={action}
       >
         <div className="grid gap-2">
@@ -40,7 +40,7 @@ export default function CreatePage() {
           <label>Course Name</label>
           <Input placeholder="CSEN 146" name="tag" />
         </div>
-        <div>
+        <div className="grid gap-2">
           <label>Upload Note</label>
           <Input
             type="file"

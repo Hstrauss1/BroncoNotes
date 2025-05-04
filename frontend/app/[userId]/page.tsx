@@ -1,4 +1,4 @@
-import { getUserData } from "./getUserData";
+import { initializeUser } from "./initializeUser";
 
 export default async function DefaultPage({
   params,
@@ -6,7 +6,7 @@ export default async function DefaultPage({
   params: Promise<{ userId: string }>;
 }) {
   const { userId } = await params;
-  const data = await getUserData(userId);
+  const data = await initializeUser(userId);
 
   return (
     <div className="p-6">

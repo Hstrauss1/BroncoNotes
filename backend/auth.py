@@ -27,7 +27,6 @@ def authenticate_request():
         return jsonify({"error": "Authorization header is missing or invalid"}), 401
     try:
         jwt = auth_header.split(' ')[1]
-        print(jwt)
         g.supabase_client = get_supabase_client(jwt)
     except IndexError:
         return jsonify({"error": "Invalid Authorization header format"}), 401

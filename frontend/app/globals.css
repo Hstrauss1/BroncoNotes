@@ -29,4 +29,14 @@
   label {
     @apply text-sm text-neutral-700;
   }
+
+  hr {
+    @apply border-t border-neutral-200;
+  }
+}
+
+@layer components {
+  .wm-auto {
+    @apply w-full max-w-[800px] mx-auto;
+  }
 }

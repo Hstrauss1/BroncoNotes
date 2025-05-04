@@ -17,9 +17,9 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
-import { User } from "@supabase/supabase-js";
 import Image from "next/image";
 import Link from "next/link";
+import { getUser } from "./initializeUser";
 
 // Menu items.
 const items = [
@@ -35,7 +35,8 @@ const items = [
   },
 ];
 
-export async function AppSidebar({ user }: { user: User }) {
+export async function AppSidebar({ userId }: { userId: string }) {
+  const user = await getUser(userId);
   return (
     <Sidebar>
       <SidebarContent>
@@ -48,7 +49,7 @@ export async function AppSidebar({ user }: { user: User }) {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link href={`/${user.id}/${item.url}`}>
+                    <Link href={`/${userId}/${item.url}`}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>
@@ -66,13 +67,13 @@ export async function AppSidebar({ user }: { user: User }) {
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
                   <Image
-                    src={user.user_metadata.avatar_url}
+                    src={user.avatar}
                     className="rounded-full"
                     alt="Avatar image"
                     width={18}
                     height={18}
                   />
-                  {user.user_metadata.full_name}
+                  {user.name}
                   <MoreHorizontal className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>

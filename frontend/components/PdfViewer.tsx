@@ -11,9 +11,10 @@ pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.vers
 interface PdfViewerProps {
   url: string;
   className?: string;
+  height: number;
 }
 
-export function PdfViewer({ url, className }: PdfViewerProps) {
+export function PdfViewer({ url, className, height }: PdfViewerProps) {
   const [numPages, setNumPages] = useState<number>(0);
 
   return (
@@ -31,8 +32,9 @@ export function PdfViewer({ url, className }: PdfViewerProps) {
             pageNumber={index + 1}
             renderAnnotationLayer={false}
             renderTextLayer={true}
-            className="border border-zinc-300 rounded-sm overflow-clip w-fit drop-shadow-sm"
+            className="border border-zinc-300/70 rounded-sm overflow-clip drop-shadow-xs"
             onClick={() => console.log("Page clicked")}
+            height={height}
           />
         ))}
     </Document>

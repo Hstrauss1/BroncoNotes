@@ -16,7 +16,7 @@ def fetch_user_by_id(user_id: str) -> Optional[Dict[str, Any]]:
         response = (
             g.supabase_client
               .table("Account")
-              .select("user_id, points_tot")
+              .select("*")
               .eq("user_id", user_id)
               .single()
               .execute()
@@ -35,7 +35,7 @@ def fetch_user_by_id(user_id: str) -> Optional[Dict[str, Any]]:
 
     return data
 
-def get_or_create_user(user_id: str, initial_points: int = 0) -> Optional[Dict[str, Any]]:
+def get_or_create_user(user_id: str, avatar:str, name:str, initial_points: int = 0) -> Optional[Dict[str, Any]]:
     """
     Fetches a user by user_id; creates them with default points if they don't exist.
     """
@@ -53,7 +53,9 @@ def get_or_create_user(user_id: str, initial_points: int = 0) -> Optional[Dict[s
               .table("Account")
               .insert({
                   "user_id": user_id,
-                  "points_tot": initial_points
+                  "avatar": avatar,
+                  "name": name,
+                  "points_tot": initial_points,
               })
               .execute()  # Execute the insert
         )
