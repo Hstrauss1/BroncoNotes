@@ -10,6 +10,9 @@ def update_user_points(user_id, reward=1):
     
     current_points = response.data["points_tot"] if response.data else 0
     new_points = current_points + reward
+    if new_points < 0:
+            raise Exception("Points cannot be negative.")
+    
     update_response = g.supabase_client.table("Account") \
         .update({"points_tot": new_points}) \
         .eq("user_id", user_id) \
