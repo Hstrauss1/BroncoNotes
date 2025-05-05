@@ -70,6 +70,8 @@ def create_note(user_id: str, title: str, storage_path: str) -> str:
 
 
 def delete_note(note_id: str):
+    if not isinstance(note_id, str) or not note_id:
+        raise TypeError("Invalid note_id"
     try:
         response = g.supabase_client.table("Note") \
             .select("storage_path") \
