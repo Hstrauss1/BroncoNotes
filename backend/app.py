@@ -181,6 +181,14 @@ def comment_note_endpoint():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+        
+@app.route("/delete-note/<note_id>", methods=["DELETE"])
+def delete_note_route(note_id):
+    try:
+        delete_note(note_id)
+        return jsonify({"status": "success", "message": f"Note {note_id} deleted"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 400
 
 
 # Run app
