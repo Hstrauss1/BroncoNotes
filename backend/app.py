@@ -2,7 +2,7 @@ import io
 import os
 from flask import Flask, jsonify, request, send_file
 from flask.helpers import abort
-from note import create_note, fetch_note_comments, fetch_pdf_from_storage, upload_pdf_to_bucket, fetch_note_by_id
+from note import create_note, fetch_note_comments, fetch_pdf_from_storage, upload_pdf_to_bucket, fetch_note_by_id, delete_note
 from auth import authenticate_request
 from user import fetch_user_by_id, get_or_create_user
 from interaction import like_note, comment_note, check_points, update_note_cost, update_user_points
