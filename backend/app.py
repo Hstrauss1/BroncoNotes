@@ -5,7 +5,7 @@ from flask.helpers import abort
 from note import create_note, fetch_note_comments, fetch_pdf_from_storage, upload_pdf_to_bucket, fetch_note_by_id, delete_note
 from auth import authenticate_request
 from user import fetch_user_by_id, get_or_create_user
-from interaction import like_note, comment_note, check_points, update_note_cost, update_user_points
+from interaction import like_note, comment_note, check_points, update_note_cost, update_user_points, InsufficientPointsError
 
 app = Flask(__name__)
 
@@ -114,8 +114,10 @@ def update_points():
 
         data = update_user_points(user_id, reward)
         return jsonify({"message": "Points updated", "data": data}), 200
-
+    
     except Exception as e:
+        if str(e) == "Points cannot be negative":
+            return jsonify({"error": str(e)}), 400
         return jsonify({"error": str(e)}), 500
 
 @app.route('/update_cost', methods=['POST'])
@@ -145,7 +147,9 @@ def unlock_note():
 
         result = check_points(user_id, note_id)
         return jsonify(result), 200
-
+    
+    except InsufficientPointsError as e:
+        return jsonify({"error": str(e)}), 403 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
