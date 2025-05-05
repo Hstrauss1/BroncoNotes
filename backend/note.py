@@ -2,6 +2,8 @@ import logging
 import uuid
 from flask import g
 from postgrest.exceptions import APIError
+import mimetypes
+import os
 
 
 def is_valid_pdf_file_path(file_path: str) -> bool:
