@@ -63,7 +63,6 @@ def create_note(user_id: str, title: str, storage_path: str) -> str:
 
     return note_id
 
-
 def delete_note(note_id: str):
     try:
         response = g.supabase_client.table("Note") \
@@ -72,10 +71,11 @@ def delete_note(note_id: str):
             .single() \
             .execute()
 
-        if not response.data:
+        note_data = response.get("data")
+        if not note_data:
             raise Exception(f"Note {note_id} not found")
 
-        storage_path = response.data["storage_path"]
+        storage_path = note_data["storage_path"]
         g.supabase_client.storage.from_("note-storage").remove([storage_path])
         g.supabase_client.table("Note").delete().eq("note_id", note_id).execute()
 
