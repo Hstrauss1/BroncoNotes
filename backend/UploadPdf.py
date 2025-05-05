@@ -18,14 +18,30 @@ def upload_pdf_to_bucket(file_path: str, user_id: str) -> str:
 
 def create_note(user_id: str, title: str, storage_path: str) -> str:
     note_id = str(uuid.uuid4())
+    today = datetime.utcnow().date()
+    start_of_day = datetime.combine(today, datetime.min.time()).isoformat()
+    end_of_day = datetime.combine(today, datetime.max.time()).isoformat()
+
     try:
+        response = g.supabase_client.table("Note") \
+            .select("note_id", count="exact") \
+            .eq("user_id", user_id) \
+            .gte("created_at", start_of_day) \
+            .lte("created_at", end_of_day) \
+            .execute()
+        upload_count = response.count if hasattr(response, "count") else len(response.data)
+        if upload_count >= 5:
+            raise Exception("Upload limit reached: Max 5 uploads per day.")
+
         g.supabase_client.table("Note").insert({
-            "note_id":     note_id,
-            "user_id":     user_id,
-            "votes":       0,
-            "title":       title,
+            "note_id":      note_id,
+            "user_id":      user_id,
+            "votes":        0,
+            "title":        title,
             "storage_path": storage_path
         }).execute()
+
     except Exception as e:
-        raise Exception(f"DB insert failed: {e}")
+        raise Exception(f"Note insert failed: {e}")
+
     return note_id
