@@ -62,3 +62,23 @@ def create_note(user_id: str, title: str, storage_path: str) -> str:
         raise Exception(f"Note insert failed: {e}")
 
     return note_id
+
+
+def delete_note(note_id: str):
+    try:
+        response = g.supabase_client.table("Note") \
+            .select("storage_path") \
+            .eq("note_id", note_id) \
+            .single() \
+            .execute()
+
+        if not response.data:
+            raise Exception(f"Note {note_id} not found")
+
+        storage_path = response.data["storage_path"]
+        g.supabase_client.storage.from_("note-storage").remove([storage_path])
+        g.supabase_client.table("Note").delete().eq("note_id", note_id).execute()
+
+    except Exception as e:
+        raise Exception(f"Failed to delete note: {e}")
+
