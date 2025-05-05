@@ -8,6 +8,8 @@ import os
 
 
 def is_valid_pdf_file_path(file_path: str) -> bool:
+    if not os.path.exists(file_path) or not os.path.isfile(file_path):
+        return False
     if not file_path.lower().endswith('.pdf'):
         return False
     mime_type, _ = mimetypes.guess_type(file_path)
