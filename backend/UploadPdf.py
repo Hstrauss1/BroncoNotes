@@ -1,7 +1,24 @@
 import uuid
 from flask import g
+import mimetypes
+import os
+
+
+def is_valid_pdf_file_path(file_path: str) -> bool:
+    if not file_path.lower().endswith('.pdf'):
+        return False
+    mime_type, _ = mimetypes.guess_type(file_path)
+    if mime_type != 'application/pdf':
+        return False
+
+    if os.path.getsize(file_path) == 0:
+        return False
+    return True
+
 
 def upload_pdf_to_bucket(file_path: str, user_id: str) -> str:
+    if not is_valid_pdf_file_path(file_path):
+        raise Exception("Invalid or empty PDF file")
     file_name = f"{uuid.uuid4()}.pdf"
     storage_path = f"{user_id}/{file_name}"
 
