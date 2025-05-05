@@ -37,6 +37,8 @@ def upload_pdf_to_bucket(file_path: str, user_id: str) -> str:
 
 
 def create_note(user_id: str, title: str, storage_path: str) -> str:
+    if not isinstance(title, str) or not title:
+        raise TypeError("Invalid note title")
     note_id = str(uuid.uuid4())
     today = datetime.utcnow().date()
     start_of_day = datetime.combine(today, datetime.min.time()).isoformat()
