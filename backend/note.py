@@ -75,10 +75,11 @@ def delete_note(note_id: str):
             .single() \
             .execute()
 
-        if not response.data:
+        note_data = response.get("data")
+        if not note_data:
             raise Exception(f"Note {note_id} not found")
 
-        storage_path = response.data["storage_path"]
+        storage_path = note_data["storage_path"]
         g.supabase_client.storage.from_("note-storage").remove([storage_path])
         g.supabase_client.table("Note").delete().eq("note_id", note_id).execute()
 
