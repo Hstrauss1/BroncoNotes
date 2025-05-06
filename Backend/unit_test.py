@@ -1,61 +1,112 @@
 import unittest
-from unittest.mock import patch, MagicMock
-from app import app
+from unittest.mock import MagicMock
+from interaction import update_user_points, check_points, InsufficientPointsError
 from flask import g
-from interaction import InsufficientPointsError
+from app import app
 
-class UpdatePointsTestCase(unittest.TestCase):
-    def setUp(self):
-        self.app = app.test_client()
-        self.app_context = app.app_context()
-        self.app_context.push()
-
-    def tearDown(self):
-        self.app_context.pop()
-
-    @patch("app.authenticate_request", return_value=None)
-    @patch("app.update_user_points")
-    def test_update_points_success(self, mock_update_user_points, mock_authenticate):
-        #simulates whether it will award points and return right status 
-        mock_update_user_points.return_value = {"points_tot": 5}
-
-        response = self.app.post("/update_points", data={
-            "user_id": "500771d2-e06f-4aec-9737-bc2d06b265a9",
-            "reward": 5
-        })
+class TestUpdateUserPoints(unittest.TestCase):
+    def test_update_points_success(self):
+        with app.app_context():
+            mock_client = MagicMock()
+            g.supabase_client = mock_client
         
-        self.assertEqual(response.status_code, 200)
-        self.assertIn("Points updated", response.get_json()["message"])
+            select_response_mock = MagicMock()
+            select_response_mock.data = {"points_tot": 10}
+
+            update_response_mock = MagicMock()
+            update_response_mock.data = {"points_tot": 15}
+
+            select_mock = MagicMock()
+            select_mock.select.return_value = select_mock
+            select_mock.eq.return_value = select_mock
+            select_mock.single.return_value = select_mock
+            select_mock.execute.return_value = select_response_mock
+
+            update_mock = MagicMock()
+            update_mock.update.return_value = update_mock
+            update_mock.eq.return_value = update_mock
+            update_mock.execute.return_value = update_response_mock
+
+            def table_side_effect(name):
+                return select_mock
+
+            mock_client.table.side_effect = table_side_effect
+            select_mock.update = update_mock.update
+
+            try:
+                result = update_user_points("user123", reward=5)
+                self.assertEqual(result["points_tot"], 15)
+            except Exception as e:
+                self.fail(f"update_user_points raised an Exception unexpectedly: {e}")
     
-    @patch("app.authenticate_request", return_value=None)  
-    @patch("app.update_user_points")  
-    def test_update_points_no_negative_values(self, mock_update_user_points, mock_authenticate):
-        # simulate reward a point that will result in negative score and getting correct status 
-        mock_update_user_points.side_effect = Exception("Points cannot be negative")
-        
-        with app.test_client() as client:
-            response = client.post('/update_points', data={
-                'user_id': '500771d2-e06f-4aec-9737-bc2d06b265a9',
-                'reward': -10
-            })
+    def test_update_user_points_negative_raises_exception(self):
+        with app.app_context():
+            mock_client = MagicMock()
+            g.supabase_client = mock_client
 
-            self.assertEqual(response.status_code, 400)
-            self.assertIn("Points cannot be negative", response.get_data(as_text=True))
+            select_response_mock = MagicMock()
+            select_response_mock.data = {"points_tot": 3}
+
+            select_chain = MagicMock()
+            select_chain.select.return_value = select_chain
+            select_chain.eq.return_value = select_chain
+            select_chain.single.return_value = select_chain
+            select_chain.execute.return_value = select_response_mock
+
+            update_chain = MagicMock()
+            update_chain.update.return_value = update_chain
+            update_chain.eq.return_value = update_chain
+            update_chain.execute.return_value = {} 
+
+            def table_side_effect(table_name):
+                return select_chain
+
+            mock_client.table.side_effect = table_side_effect
+            select_chain.update = update_chain.update  # Attach update in case it accidentally gets called
+
+            # Now test the function call
+            with self.assertRaises(Exception) as context:
+                update_user_points("user123", reward=-5)
+
+            self.assertIn("Points cannot be negative", str(context.exception))
     
-    @patch("app.authenticate_request", return_value=None)  
-    @patch("app.check_points")  
-    def test_unlock_note_insufficient_points(self, mock_check_points, mock_authenticate):
-        #simulates whether or not get correct status when have insufficient points
-        mock_check_points.side_effect = InsufficientPointsError("Insufficient points to unlock note.")
+    def test_check_points_insufficient_points(self):
+        with app.app_context():
+            mock_client = MagicMock()
+            g.supabase_client = mock_client
 
-        with app.test_client() as client:
-            response = client.post('/unlock_note', json={
-                'user_id': '3ee65b8e-bcef-44fc-9b08-987f12a30374',
-                'note_id': '05f2d689-49fc-4aed-a674-b6b8fb588e42'
-            })
+            user_response_mock = MagicMock()
+            user_response_mock.data = {"points_tot": 3}  
 
-            self.assertEqual(response.status_code, 403)
-            self.assertIn("Insufficient points", response.get_data(as_text=True))
+            note_response_mock = MagicMock()
+            note_response_mock.data = {"cost": 10}  
+
+            select_user_mock = MagicMock()
+            select_user_mock.select.return_value = select_user_mock
+            select_user_mock.eq.return_value = select_user_mock
+            select_user_mock.single.return_value = select_user_mock
+            select_user_mock.execute.return_value = user_response_mock
+
+            select_note_mock = MagicMock()
+            select_note_mock.select.return_value = select_note_mock
+            select_note_mock.eq.return_value = select_note_mock
+            select_note_mock.single.return_value = select_note_mock
+            select_note_mock.execute.return_value = note_response_mock
+
+            def table_side_effect(table_name):
+                if table_name == "Account":
+                    return select_user_mock
+                elif table_name == "Note":
+                    return select_note_mock
+                else:
+                    raise Exception("Unexpected table")
+
+            mock_client.table.side_effect = table_side_effect
+
+            with self.assertRaises(InsufficientPointsError) as context:
+                check_points("user123", "note456")
+
+            self.assertIn("Insufficient points", str(context.exception))
 
 if __name__ == "__main__":
     unittest.main()
