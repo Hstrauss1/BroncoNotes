@@ -1,6 +1,9 @@
 from datetime import datetime
 from flask import g
 
+class InsufficientPointsError(Exception):
+    pass
+
 def update_user_points(user_id, reward=1):
     response = g.supabase_client.table("Account") \
         .select("points_tot") \
@@ -61,12 +64,14 @@ def check_points(user_id, note_id):
 
         note_cost = note_response.data["cost"]
         if user_points < note_cost:
-            raise Exception("Insufficient points to unlock note.")
+            raise InsufficientPointsError("Insufficient points to unlock note.")
 
         update_user_points(user_id, -note_cost)
         unlocked_note(user_id, note_id)
         return {"message": "Note unlocked successfully"}
-
+    
+    except InsufficientPointsError:
+        raise
     except Exception as e:
         raise Exception(f"Failed to unlock note: {str(e)}")
 
