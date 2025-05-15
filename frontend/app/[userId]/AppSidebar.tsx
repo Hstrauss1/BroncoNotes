@@ -1,4 +1,4 @@
-import { File, Heart, MoreHorizontal, Settings } from "lucide-react";
+import { File, Heart, LogOut, MoreHorizontal, Settings } from "lucide-react";
 
 import {
   Sidebar,
@@ -21,6 +21,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getUser } from "./initializeUser";
 import { createClient } from "@/lib/supabase/server";
+import { signOut } from "./action";
 
 // Menu items.
 const items = [
@@ -45,6 +46,7 @@ export async function AppSidebar({ userId }: { userId: string }) {
     return null; // Handle the case when the token is not available
   }
   const user = await getUser(userId, token);
+
   return (
     <Sidebar>
       <SidebarContent>
@@ -94,6 +96,12 @@ export async function AppSidebar({ userId }: { userId: string }) {
                   <Settings />
                   <span>Settings</span>
                 </DropdownMenuItem>
+                <form action={signOut}>
+                  <button type="submit">
+                    <LogOut />
+                    <span>Sign Out</span>
+                  </button>
+                </form>
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>
