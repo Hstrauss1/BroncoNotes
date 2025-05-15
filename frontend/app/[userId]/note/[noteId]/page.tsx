@@ -4,6 +4,7 @@ import { Lock, ThumbsUp } from "lucide-react";
 import PdfThumbnail from "@/components/ui/PdfThumbnail";
 import { Comment } from "@/components/ui/comment";
 import { getUser } from "@/app/[userId]/initializeUser";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function NotePage({
   params,
@@ -11,10 +12,17 @@ export default async function NotePage({
   params: Promise<{ noteId: string }>;
 }) {
   const { noteId } = await params;
-  const note = await getNoteData(noteId);
+  const supabase = await createClient();
+  const session = await supabase.auth.getSession();
+  const token = session.data.session?.access_token;
+
+  if (!token) {
+    return null; // Handle the case when the token is not available
+  }
+  const note = await getNoteData(noteId, token);
   const pdfBlob = await getNotePdfBlob(note.storage_path);
-  const user = await getUser(note.user_id);
-  const comments = await getNoteComments(noteId, note.user_id);
+  const user = await getUser(note.user_id, token);
+  const comments = await getNoteComments(noteId, note.user_id, token);
 
   // Convert Blob to ArrayBuffer on the server and pass as data URL
   const arrayBuffer = await pdfBlob.arrayBuffer();

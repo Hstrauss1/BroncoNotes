@@ -1,4 +1,4 @@
-import { File, Heart, LogOut, MoreHorizontal, Settings } from "lucide-react";
+import { File, Heart, MoreHorizontal, Settings } from "lucide-react";
 
 import {
   Sidebar,
@@ -20,6 +20,7 @@ import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import Image from "next/image";
 import Link from "next/link";
 import { getUser } from "./initializeUser";
+import { createClient } from "@/lib/supabase/server";
 
 // Menu items.
 const items = [
@@ -36,7 +37,14 @@ const items = [
 ];
 
 export async function AppSidebar({ userId }: { userId: string }) {
-  const user = await getUser(userId);
+  const supabase = await createClient();
+  const session = await supabase.auth.getSession();
+  const token = session.data.session?.access_token;
+  console.log("token", token);
+  if (!token) {
+    return null; // Handle the case when the token is not available
+  }
+  const user = await getUser(userId, token);
   return (
     <Sidebar>
       <SidebarContent>
@@ -85,10 +93,6 @@ export async function AppSidebar({ userId }: { userId: string }) {
                 <DropdownMenuItem>
                   <Settings />
                   <span>Settings</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="bg-red-500/85 text-white focus:bg-red-500/90 focus:text-white">
-                  <LogOut className="text-white" />
-                  <span>Sign out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

@@ -1,5 +1,6 @@
 import PdfViewer from "@/components/PdfViewer";
 import { getNoteData, getNotePdfBlob } from "../getNoteData";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function ViewPage({
   params,
@@ -7,7 +8,16 @@ export default async function ViewPage({
   params: Promise<{ noteId: string }>;
 }) {
   const { noteId } = await params;
-  const note = await getNoteData(noteId);
+
+  const supabase = await createClient();
+  const session = await supabase.auth.getSession();
+  const token = session.data.session?.access_token;
+
+  if (!token) {
+    return null; // Handle the case when the token is not available
+  }
+
+  const note = await getNoteData(noteId, token);
   const pdfBlob = await getNotePdfBlob(note.storage_path);
 
   const arrayBuffer = await pdfBlob.arrayBuffer();
@@ -16,7 +26,7 @@ export default async function ViewPage({
 
   return (
     <div className="flex flex-col">
-      <h1>{note.name}</h1>
+      {/* <h1>{note.title}</h1> */}
       <PdfViewer
         url={pdfUrl}
         height={1000}

@@ -72,3 +72,43 @@ def get_or_create_user(user_id: str, avatar:str, name:str, initial_points: int =
 
     # If insert failed or there is no data, return None
     return None
+
+
+def delete_user(user_id: str) -> bool:
+    """
+    Delete a user by user_id.
+    Returns:
+      - True if the user was deleted successfully
+      - False if the user was not found or on error
+    """
+    try:
+        # Delete the user from the "Account" table
+        response = (
+            g.supabase_client
+              .table("Account")
+              .delete()
+              .eq("user_id", user_id)
+              .execute()
+        )
+        if response.status_code != 204:
+            logging.error(f"Failed to delete user {user_id} from Account table: {response.status_code}")
+            return False
+
+        # Delete the user from Supabase Auth
+        try:
+            auth_response = g.supabase_client.auth.api.delete_user(user_id)
+            if auth_response.status_code != 204:
+                logging.error(f"Failed to delete user {user_id} from Supabase Auth: {auth_response.status_code}")
+                return False
+        except Exception as e:
+            logging.error(f"Unexpected error deleting user {user_id} from Supabase Auth: {e}")
+            return False
+
+        return True
+
+    except APIError as e:
+        logging.error(f"Supabase API error deleting user {user_id}: {e.code} – {e.message}")
+        return False
+    except Exception as e:
+        logging.error(f"Unexpected error deleting user {user_id}: {e}")
+        return False
