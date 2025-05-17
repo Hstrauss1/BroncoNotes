@@ -4,11 +4,12 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Account } from "../types";
 
-export const initializeUser = async (userId: string) => {
-  const supabase = await createClient();
-  const user = (await supabase.auth.getUser()).data.user;
-  const session = await supabase.auth.getSession();
-  const token = session.data.session?.access_token;
+export const initializeUser = async (
+  userId: string,
+  avatar: string,
+  name: string,
+  token: string
+) => {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/initialize-user/${userId}`,
     {
@@ -18,8 +19,8 @@ export const initializeUser = async (userId: string) => {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        avatar: user?.user_metadata.avatar_url,
-        name: user?.user_metadata.avatar_url,
+        avatar: avatar,
+        name: name,
       }),
     }
   );
@@ -40,6 +41,7 @@ export const getUser = async (userId: string, token: string) => {
     }
   );
 
+  console.log(res);
   if (!res.ok) redirect("/error");
   return (await res.json()) as Account;
 };

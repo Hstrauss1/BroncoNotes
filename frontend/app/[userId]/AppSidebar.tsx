@@ -37,14 +37,17 @@ const items = [
   },
 ];
 
-export async function AppSidebar({ userId }: { userId: string }) {
+export async function AppSidebar() {
   const supabase = await createClient();
+  const currentUser = (await supabase.auth.getUser()).data.user;
   const session = await supabase.auth.getSession();
   const token = session.data.session?.access_token;
-  console.log("token", token);
-  if (!token) {
-    return null; // Handle the case when the token is not available
-  }
+
+  if (!currentUser) return null;
+  const userId = currentUser.id;
+
+  if (!token) return null;
+
   const user = await getUser(userId, token);
 
   return (
@@ -96,12 +99,14 @@ export async function AppSidebar({ userId }: { userId: string }) {
                   <Settings />
                   <span>Settings</span>
                 </DropdownMenuItem>
-                <form action={signOut}>
-                  <button type="submit">
-                    <LogOut />
-                    <span>Sign Out</span>
-                  </button>
-                </form>
+                <DropdownMenuItem>
+                  <form action={signOut}>
+                    <button type="submit" className="flex gap-2">
+                      <LogOut />
+                      <span>Sign Out</span>
+                    </button>
+                  </form>
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>

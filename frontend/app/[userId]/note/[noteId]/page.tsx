@@ -5,6 +5,7 @@ import PdfThumbnail from "@/components/ui/PdfThumbnail";
 import { Comment } from "@/components/ui/comment";
 import { getUser } from "@/app/[userId]/initializeUser";
 import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 
 export default async function NotePage({
   params,
@@ -20,14 +21,33 @@ export default async function NotePage({
     return null; // Handle the case when the token is not available
   }
   const note = await getNoteData(noteId, token);
-  const pdfBlob = await getNotePdfBlob(note.storage_path);
+  const pdfBlob = await getNotePdfBlob(note.storage_path, token);
   const user = await getUser(note.user_id, token);
   const comments = await getNoteComments(noteId, note.user_id, token);
 
-  // Convert Blob to ArrayBuffer on the server and pass as data URL
   const arrayBuffer = await pdfBlob.arrayBuffer();
   const base64 = Buffer.from(arrayBuffer).toString("base64");
   const pdfUrl = `data:application/pdf;base64,${base64}`;
+
+  const getLikeNotes = async (
+    noteId: string,
+    token: string,
+    userId: string
+  ) => {
+    const notesRef = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/like_note`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ note_id: noteId, user_id: userId }),
+      }
+    );
+    if (!notesRef.ok) redirect("/error");
+    return await notesRef.json();
+  };
 
   return (
     <div className="flex flex-col h-full">

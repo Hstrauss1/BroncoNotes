@@ -13,13 +13,13 @@ import { useShallow } from "zustand/shallow";
 import { ArrowRight, LogOut, PlusSquare, Search, Sidebar } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-export function CommandMenu({ userId }: { userId: string }) {
+export function CommandMenu() {
   const router = useRouter();
   const { open, setOpen } = useCommandMenu(
     useShallow((state) => ({
       open: state.open,
       setOpen: state.setOpen,
-    })),
+    }))
   );
 
   useEffect(() => {
@@ -42,7 +42,7 @@ export function CommandMenu({ userId }: { userId: string }) {
         <CommandGroup heading="Actions">
           <CommandItem
             onSelect={() => {
-              router.push(`/${userId}/create`);
+              router.push(`/create`);
               setOpen(!open);
             }}
           >

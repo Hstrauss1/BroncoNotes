@@ -27,11 +27,7 @@ export const getNoteAuthor = async (authorId: string) => {
 };
 
 // Separate server action to fetch the PDF data as a Blob
-export const getNotePdfBlob = async (storagePath: string) => {
-  const supabase = await createClient();
-  const session = await supabase.auth.getSession();
-  const token = session.data.session?.access_token;
-
+export const getNotePdfBlob = async (storagePath: string, token: string) => {
   const storageRes = await fetch(
     `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/storage`,
     {
@@ -44,6 +40,7 @@ export const getNotePdfBlob = async (storagePath: string) => {
     }
   );
 
+  console.log(storageRes, storagePath);
   if (!storageRes.ok) redirect("/error");
   return await storageRes.blob();
 };
