@@ -39,4 +39,8 @@
   .wm-auto {
     @apply w-full max-w-[750px] mx-auto;
   }
+
+  .link {
+    @apply flex items-center justify-center gap-1 underline underline-offset-4 decoration-1 text-blue-500 hover:text-blue-600 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-3.5 [&_svg]:size-3.5 [&_svg]:shrink-0 transition-transform active:scale-95;
+  }
 }

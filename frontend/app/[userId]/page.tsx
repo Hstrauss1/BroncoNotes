@@ -1,9 +1,3 @@
-export default async function DefaultPage({
-  params,
-}: {
-  params: Promise<{ userId: string }>;
-}) {
-  const { userId } = await params;
-
+export default async function DefaultPage() {
   return <div className="p-6"></div>;
 }

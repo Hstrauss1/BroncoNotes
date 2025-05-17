@@ -1,3 +1,4 @@
+import { getUser, initializeUser } from "@/app/[userId]/initializeUser";
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 // The client you created from the Server-Side Auth instructions
@@ -9,16 +10,36 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = await createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) {
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.exchangeCodeForSession(code);
+    if (!error && session) {
       const forwardedHost = request.headers.get("x-forwarded-host");
       const isLocalEnv = process.env.NODE_ENV === "development";
+      const user = session?.user;
+      let redirectTo = next.replace("/user", `/${user.id}`);
+
+      // Check if the user already exists
+      const userDb = await getUser(user.id, session?.access_token);
+
+      // If the user does not exist, initialize them
+      if (!userDb) {
+        await initializeUser(
+          user.id,
+          user.user_metadata.avatar_url,
+          user.user_metadata.name,
+          session?.access_token
+        );
+        redirectTo = next.replace(`/${user.id}`, `/${user.id}/onboarding`);
+      }
+
       if (isLocalEnv) {
-        return NextResponse.redirect(`${origin}${next}`);
+        return NextResponse.redirect(`${origin}${redirectTo}`);
       } else if (forwardedHost) {
-        return NextResponse.redirect(`https://${forwardedHost}${next}`);
+        return NextResponse.redirect(`https://${forwardedHost}${redirectTo}`);
       } else {
-        return NextResponse.redirect(`${origin}${next}`);
+        return NextResponse.redirect(`${origin}${redirectTo}`);
       }
     }
   }

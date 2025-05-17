@@ -22,6 +22,7 @@ import Link from "next/link";
 import { getUser } from "./initializeUser";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "./action";
+import { redirect } from "next/navigation";
 
 // Menu items.
 const items = [
@@ -43,10 +44,9 @@ export async function AppSidebar() {
   const session = await supabase.auth.getSession();
   const token = session.data.session?.access_token;
 
-  if (!currentUser) return null;
-  const userId = currentUser.id;
+  if (!currentUser || !token) redirect("/signin");
 
-  if (!token) return null;
+  const userId = currentUser.id;
 
   const user = await getUser(userId, token);
 

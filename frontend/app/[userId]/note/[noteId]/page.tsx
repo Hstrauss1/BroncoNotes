@@ -1,11 +1,19 @@
 import { Button } from "@/components/ui/button";
 import { getNoteComments, getNoteData, getNotePdfBlob } from "./getNoteData";
-import { Lock, ThumbsUp } from "lucide-react";
+import { Eye, Lock, Settings, ThumbsUp } from "lucide-react";
 import PdfThumbnail from "@/components/ui/PdfThumbnail";
 import { Comment } from "@/components/ui/comment";
 import { getUser } from "@/app/[userId]/initializeUser";
 import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
+// import { redirect } from "next/navigation";
+import Link from "next/link";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 export default async function NotePage({
   params,
@@ -29,25 +37,25 @@ export default async function NotePage({
   const base64 = Buffer.from(arrayBuffer).toString("base64");
   const pdfUrl = `data:application/pdf;base64,${base64}`;
 
-  const getLikeNotes = async (
-    noteId: string,
-    token: string,
-    userId: string
-  ) => {
-    const notesRef = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/like_note`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ note_id: noteId, user_id: userId }),
-      }
-    );
-    if (!notesRef.ok) redirect("/error");
-    return await notesRef.json();
-  };
+  // const getLikeNotes = async (
+  //   noteId: string,
+  //   token: string,
+  //   userId: string
+  // ) => {
+  //   const notesRef = await fetch(
+  //     `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/like_note`,
+  //     {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //       body: JSON.stringify({ note_id: noteId, user_id: userId }),
+  //     }
+  //   );
+  //   if (!notesRef.ok) redirect("/error");
+  //   return await notesRef.json();
+  // };
 
   return (
     <div className="flex flex-col h-full">
@@ -61,14 +69,75 @@ export default async function NotePage({
               </p>
             </hgroup>
             <div className="flex items-center gap-2">
-              <Button variant="action" size="sm" className="w-fit">
-                <Lock />
-                Unlock with {note.cost} Points
-              </Button>
-              <Button variant="secondary" size="sm">
-                <ThumbsUp />
-                {note.votes} Likes
-              </Button>
+              {session.data.session?.user.id === note.user_id ? (
+                <>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="secondary" size="sm">
+                        <Settings />
+                        Settings
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>Settings</DialogHeader>
+                      <form className="grid gap-6">
+                        <div className="grid gap-3">
+                          <div className="flex items-center gap-4">
+                            <label htmlFor="title" className="w-36 text-right">
+                              Title
+                            </label>
+                            <Input
+                              type="text"
+                              id="title"
+                              defaultValue={note.title}
+                            />
+                          </div>
+                          <div className="flex items-center gap-4">
+                            <label htmlFor="title" className="w-36 text-right">
+                              Tag
+                            </label>
+                            <Input
+                              type="text"
+                              id="title"
+                              defaultValue={note.title}
+                            />
+                          </div>
+                          <div className="flex items-center gap-4">
+                            <label htmlFor="cost" className="w-36 text-right">
+                              Cost
+                            </label>
+                            <Input
+                              type="number"
+                              id="cost"
+                              defaultValue={note.cost}
+                            />
+                          </div>
+                        </div>
+                        <Button type="submit" variant="secondary" size="sm">
+                          Save Changes
+                        </Button>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
+                  <Link href={`/${note.user_id}/note/${note.note_id}/view`}>
+                    <Button variant="secondary" size="sm">
+                      <Eye />
+                      View Note
+                    </Button>
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Button variant="action" size="sm" className="w-fit">
+                    <Lock />
+                    Unlock with {note.cost} Points
+                  </Button>
+                  <Button variant="secondary" size="sm">
+                    <ThumbsUp />
+                    {note.votes} Likes
+                  </Button>
+                </>
+              )}
             </div>
           </div>
           <PdfThumbnail url={pdfUrl} height={150} />

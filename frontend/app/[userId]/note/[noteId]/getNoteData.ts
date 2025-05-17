@@ -82,3 +82,19 @@ export const getNoteComments = async (
     user_comment: Comment;
   };
 };
+
+export const getUnlockedNote = async () => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("notes")
+    .select("*")
+    .eq("is_locked", false)
+    .limit(1);
+
+  if (error) {
+    console.error("Error fetching unlocked note:", error);
+    return null;
+  }
+
+  return data[0];
+};
