@@ -18,7 +18,7 @@ export default async function ViewPage({
   }
 
   const note = await getNoteData(noteId, token);
-  const pdfBlob = await getNotePdfBlob(note.storage_path);
+  const pdfBlob = await getNotePdfBlob(note.storage_path, token);
 
   const arrayBuffer = await pdfBlob.arrayBuffer();
   const base64 = Buffer.from(arrayBuffer).toString("base64");
