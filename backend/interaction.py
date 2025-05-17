@@ -97,6 +97,10 @@ def like_note(user_id, note_id):
         raise Exception("Note not found.")
 
     note_user_id = note_response.data["user_id"]
+
+    if user_id == note_user_id:
+        raise Exception("Users cannot like their own notes.")
+    
     update_note_cost(note_id)
     update_user_points(note_user_id)
     return response
@@ -108,7 +112,20 @@ def comment_note(user_id, note_id, comment_text):
     if exists.data:
         raise Exception("Comment already exists for this user and note.")
 
-    # If not, insert the new comment
+    note_response = g.supabase_client.table("Note") \
+        .select("user_id") \
+        .eq("note_id", note_id) \
+        .single() \
+        .execute()
+
+    if not note_response.data:
+        raise Exception("Note not found.")
+
+    note_user_id = note_response.data["user_id"]
+
+    if user_id == note_user_id:
+        raise Exception("Users cannot comment on their own notes.")
+    
     create_timestamp = datetime.now().isoformat()
     response = g.supabase_client.table("Comment").insert({
         "note_id": note_id,
@@ -122,6 +139,20 @@ def comment_note(user_id, note_id, comment_text):
 def unlocked_note(user_id, note_id):
     exists = g.supabase_client.table("Unlocked").select("*").eq("user_id", user_id).eq("note_id", note_id).execute()
 
+    note_response = g.supabase_client.table("Note") \
+        .select("user_id") \
+        .eq("note_id", note_id) \
+        .single() \
+        .execute()
+    
+    if not note_response.data:
+        raise Exception("Note not found.")
+    
+    note_creator_id = note_response.data["user_id"]
+
+    # if user_id == note_creator_id:
+    #     raise Exception("You cannot unlock your own note.")
+    
     if exists.data:
         raise Exception("User already unlocked this note.")
 
@@ -131,3 +162,46 @@ def unlocked_note(user_id, note_id):
     }).execute()
 
     return response
+
+def add_tag(user_id, note_id, tag):
+    note_response = g.supabase_client.table("Note") \
+        .select("note_id") \
+        .eq("note_id", note_id) \
+        .single() \
+        .execute()
+
+    if not note_response.data:
+        raise Exception("Note not found.")
+    
+    note_creator_id = note_response.data["user_id"]
+
+    if user_id != note_creator_id:
+        raise Exception("Only the creator of the note can add tags.")
+
+    tag_exists = g.supabase_client.table("Tags") \
+        .select("*") \
+        .eq("note_id", note_id) \
+        .eq("tag", tag) \
+        .execute()
+
+    if tag_exists.data:
+        raise Exception("This tag already exists for the note.")
+
+    response = g.supabase_client.table("Tags").insert({
+        "note_id": note_id,
+        "tag": tag
+    }).execute()
+
+    return response
+
+def get_tags(note_id):
+    tag_response = g.supabase_client.table("Tags") \
+        .select("tag") \
+        .eq("note_id", note_id) \
+        .execute()
+
+    if not tag_response.data:
+        return []  
+
+    tags = [entry["tag"] for entry in tag_response.data]
+    return tags
