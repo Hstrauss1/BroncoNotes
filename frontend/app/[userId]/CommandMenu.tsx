@@ -12,6 +12,7 @@ import { useCommandMenu } from "@/app/store";
 import { useShallow } from "zustand/shallow";
 import { ArrowRight, LogOut, PlusSquare, Search, Sidebar } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { signOut } from "../(auth)/signin/action";
 
 export function CommandMenu() {
   const router = useRouter();
@@ -57,9 +58,9 @@ export function CommandMenu() {
             <Sidebar />
             Toggle Sidebar
           </CommandItem>
-          <CommandItem>
+          <CommandItem onSelect={() => signOut()}>
             <LogOut />
-            Log Out
+            Sign Out
           </CommandItem>
         </CommandGroup>
         <CommandGroup heading="Navigation">
