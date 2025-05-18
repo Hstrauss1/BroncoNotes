@@ -21,7 +21,7 @@ function Command({
       data-slot="command"
       className={cn(
         "flex h-full w-full flex-col overflow-hidden rounded-md",
-        className,
+        className
       )}
       {...props}
     />
@@ -59,13 +59,13 @@ function CommandInput({
   return (
     <div
       data-slot="command-input-wrapper"
-      className="flex h-9 items-center gap-2 px-4 border-b border-neutral-200"
+      className="flex h-9 items-center gap-2 px-4 border-b border-neutral-200 dark:border-neutral-700"
     >
       <CommandPrimitive.Input
         data-slot="command-input"
         className={cn(
           "placeholder:text-neutral-500 flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50",
-          className,
+          className
         )}
         {...props}
       />
@@ -82,7 +82,7 @@ function CommandList({
       data-slot="command-list"
       className={cn(
         "max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto",
-        className,
+        className
       )}
       {...props}
     />
@@ -109,8 +109,8 @@ function CommandGroup({
     <CommandPrimitive.Group
       data-slot="command-group"
       className={cn(
-        "[&_[cmdk-group-heading]]:text-neutral-600 overflow-hidden [&_[cmdk-group-heading]]:p-2 [&_[cmdk-group-heading]]:pt-3 [cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium pb-2",
-        className,
+        "[&_[cmdk-group-heading]]:text-neutral-600 dark:[&_[cmdk-group-heading]]:text-neutral-500 overflow-hidden [&_[cmdk-group-heading]]:p-2 [&_[cmdk-group-heading]]:pt-3 [cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium pb-2",
+        className
       )}
       {...props}
     />
@@ -138,8 +138,8 @@ function CommandItem({
     <CommandPrimitive.Item
       data-slot="command-item"
       className={cn(
-        "data-[selected=true]:bg-neutral-200/50 data-[selected=true]:text-black [&_svg:not([class*='text-'])]:text-neutral-500 relative flex cursor-default items-center gap-2 rounded-lg px-2 py-1.5 text-sm outline-hidden select-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        className,
+        "data-[selected=true]:bg-neutral-200/50 dark:data-[selected=true]:bg-neutral-700/50 data-[selected=true]:text-black dark:data-[selected=true]:text-white [&_svg:not([class*='text-'])]:text-neutral-500 dark:[&_svg:not([class*='text-'])]:text-neutral-400 relative flex cursor-default items-center gap-2 rounded-lg px-2 py-1.5 text-sm outline-hidden select-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
       )}
       {...props}
     />

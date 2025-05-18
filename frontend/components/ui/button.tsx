@@ -9,7 +9,8 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-neutral-800 text-neutral-50 shadow-xs hover:bg-primary/90",
+        default:
+          "bg-neutral-800 dark:bg-neutral-200 text-neutral-50 dark:text-neutral-950 shadow-xs hover:bg-primary/90",
         destructive:
           "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         action: "bg-sky-500 shadow-xs text-white",
@@ -29,7 +30,7 @@ const buttonVariants = cva(
       variant: "default",
       size: "default",
     },
-  },
+  }
 );
 
 function Button({

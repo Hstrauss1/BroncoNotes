@@ -1,4 +1,13 @@
-import { File, Heart, LogOut, MoreHorizontal, Settings } from "lucide-react";
+"use client";
+import {
+  AppWindow,
+  File,
+  Heart,
+  LogOut,
+  MoonIcon,
+  MoreHorizontal,
+  PlusIcon,
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -10,7 +19,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { NewNote } from "./NewNote";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,13 +27,18 @@ import {
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import Image from "next/image";
 import Link from "next/link";
-import { getUser } from "./initializeUser";
-import { createClient } from "@/lib/supabase/server";
 import { signOut } from "./action";
-import { redirect } from "next/navigation";
+import { Account } from "../types";
+import { useTheme } from "next-themes";
+import { useCommandMenu } from "../store";
 
 // Menu items.
 const items = [
+  {
+    title: "Create",
+    url: "create",
+    icon: PlusIcon,
+  },
   {
     title: "Notes",
     url: "notes",
@@ -38,17 +51,9 @@ const items = [
   },
 ];
 
-export async function AppSidebar() {
-  const supabase = await createClient();
-  const currentUser = (await supabase.auth.getUser()).data.user;
-  const session = await supabase.auth.getSession();
-  const token = session.data.session?.access_token;
-
-  if (!currentUser || !token) redirect("/signin");
-
-  const userId = currentUser.id;
-
-  const user = await getUser(userId, token);
+export function AppSidebar({ user }: { user: Account }) {
+  const { theme, setTheme } = useTheme();
+  const setOpen = useCommandMenu((state) => state.setOpen);
 
   return (
     <Sidebar>
@@ -56,13 +61,10 @@ export async function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <NewNote />
-              </SidebarMenuItem>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link href={`/${userId}/${item.url}`}>
+                    <Link href={`/${user.user_id}/${item.url}`}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>
@@ -95,13 +97,26 @@ export async function AppSidebar() {
                 sideOffset={6}
                 className="w-[15rem]"
               >
-                <DropdownMenuItem>
-                  <Settings />
-                  <span>Settings</span>
+                <DropdownMenuItem
+                  className="relative group/newnote"
+                  onSelect={() => setOpen(true)}
+                >
+                  <AppWindow />
+                  Command Menu
+                  <kbd className="*:bg-neutral-200 *:dark:bg-neutral-500/50 *:size-5 *:rounded-sm *:flex *:items-center *:justify-center *:leading-3 flex items-center gap-0.5 h-fit font-normal absolute right-2 top-1.5 transition-opacity opacity-100 group-hover/newnote:opacity-0">
+                    <span className="text-base mt-[0.5px]">⌘</span>
+                    <span className="text-xs">K</span>
+                  </kbd>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() => setTheme(theme === "dark" ? "light" : "dark")}
+                >
+                  <MoonIcon />
+                  <span>Theme</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <form action={signOut}>
-                    <button type="submit" className="flex gap-2">
+                    <button type="submit" className="flex items-center gap-2">
                       <LogOut />
                       <span>Sign Out</span>
                     </button>

@@ -24,7 +24,7 @@ export default function CreatePage() {
     <section className="w-full h-full flex items-center justify-center flex-col gap-10">
       <h1>Create a New Note</h1>
       <form
-        className="grid gap-6 min-w-[28rem] p-6 border border-neutral-300/70 shadow-xs bg-white rounded-3xl"
+        className="grid gap-6 min-w-[28rem] p-6 border border-neutral-300/70 dark:border-neutral-700/70 shadow-xs bg-white dark:bg-neutral-800 rounded-3xl"
         action={action}
       >
         <div className="grid gap-2">

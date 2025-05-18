@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
 @layer base {
   h1 {
     @apply text-2xl font-medium;
@@ -27,7 +29,7 @@
   }
 
   label {
-    @apply text-sm text-neutral-700;
+    @apply text-sm text-neutral-700 dark:text-neutral-300;
   }
 
   hr {
