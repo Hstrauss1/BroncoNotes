@@ -5,7 +5,7 @@ from flask.helpers import abort
 from note import create_note, fetch_note_comments, fetch_pdf_from_storage, upload_pdf_to_bucket, fetch_note_by_id, delete_note
 from auth import authenticate_request
 from user import fetch_user_by_id, get_or_create_user
-from interaction import like_note, comment_note, check_points, update_note_cost, update_user_points, InsufficientPointsError
+from interaction import like_note, comment_note, check_points, update_note_cost, update_user_points, add_tag, get_tags, InsufficientPointsError
 
 app = Flask(__name__)
 
@@ -193,6 +193,29 @@ def delete_note_route(note_id):
         return jsonify({"status": "success", "message": f"Note {note_id} deleted"})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 400
+
+@app.route("/tag-note/<note_id>/tags", methods=["POST"])
+def add_tag_endpoint(note_id):
+    data = request.get_json()
+    user_id = data.get("user_id")
+    tag = data.get("tag")
+
+    if not user_id or not tag:
+        return jsonify({"error": "Missing user_id or tag"}), 400
+
+    try:
+        response = add_tag(user_id, note_id, tag)
+        return jsonify({"message": "Tag added successfully", "data": response.data}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+    
+@app.route("/get-tags/<note_id>/tags", methods=["GET"])
+def get_tags_endpoint(note_id):
+    try:
+        tags = get_tags(note_id)
+        return jsonify({"note_id": note_id, "tags": tags}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 
 # Run app
