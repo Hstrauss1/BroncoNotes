@@ -27,10 +27,10 @@ import {
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import Image from "next/image";
 import Link from "next/link";
-import { signOut } from "./action";
 import { Account } from "../types";
 import { useTheme } from "next-themes";
 import { useCommandMenu } from "../store";
+import { signOut } from "../(auth)/signin/action";
 
 // Menu items.
 const items = [
