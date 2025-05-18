@@ -197,14 +197,12 @@ def delete_note_route(note_id):
 @app.route("/tag-note/<note_id>/tags", methods=["POST"])
 def add_tag_endpoint(note_id):
     data = request.get_json()
-    user_id = data.get("user_id")
     tag = data.get("tag")
 
-    if not user_id or not tag:
-        return jsonify({"error": "Missing user_id or tag"}), 400
-
+    if not tag:
+        return jsonify({"error": "Missing tag"}), 400
     try:
-        response = add_tag(user_id, note_id, tag)
+        response = add_tag( note_id, tag)
         return jsonify({"message": "Tag added successfully", "data": response.data}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 400

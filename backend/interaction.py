@@ -147,12 +147,7 @@ def unlocked_note(user_id, note_id):
     
     if not note_response.data:
         raise Exception("Note not found.")
-    
-    note_creator_id = note_response.data["user_id"]
 
-    # if user_id == note_creator_id:
-    #     raise Exception("You cannot unlock your own note.")
-    
     if exists.data:
         raise Exception("User already unlocked this note.")
 
@@ -163,7 +158,7 @@ def unlocked_note(user_id, note_id):
 
     return response
 
-def add_tag(user_id, note_id, tag):
+def add_tag(note_id, tag):
     note_response = g.supabase_client.table("Note") \
         .select("note_id") \
         .eq("note_id", note_id) \
@@ -172,12 +167,7 @@ def add_tag(user_id, note_id, tag):
 
     if not note_response.data:
         raise Exception("Note not found.")
-    
-    note_creator_id = note_response.data["user_id"]
-
-    if user_id != note_creator_id:
-        raise Exception("Only the creator of the note can add tags.")
-
+  
     tag_exists = g.supabase_client.table("Tags") \
         .select("*") \
         .eq("note_id", note_id) \
