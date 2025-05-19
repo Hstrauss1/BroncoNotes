@@ -214,3 +214,26 @@ def update_note_cost_from_likes(note_id: str) -> None:
         raise Exception(f"Note cost update failed: {e.message}")
     except Exception as e:
         raise Exception(f"Note cost update failed: {e}")
+
+   
+def update_note_title(note_id: str, new_title: str) -> None:
+    if not isinstance(note_id, str) or not note_id:
+        raise TypeError("Invalid note_id")
+    if not isinstance(new_title, str) or not new_title:
+        raise TypeError("Invalid new_title")
+
+    try:
+        resp = (
+            g.supabase_client
+             .table("Note")
+             .update({"title": new_title})
+             .eq("note_id", note_id)
+             .execute()
+        )
+        if hasattr(resp, "count") and resp.count == 0:
+            raise Exception(f"No note found with id {note_id}")
+    except APIError as e:
+        logging.error(f"Supabase API error updating title for note {note_id}: {e.code} – {e.message}")
+        raise Exception(f"Note title update failed: {e.message}")
+    except Exception as e:
+        raise Exception(f"Note title update failed: {e}")
