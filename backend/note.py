@@ -166,3 +166,51 @@ def fetch_note_comments(note_id: str, exclude_user_id: str):
         "note_comments": response.data  if hasattr(response, 'data') else None,
         "user_comment": user_response.data if hasattr(user_response, 'data') else None
     }
+
+
+
+def update_note_cost_from_likes(note_id: str) -> None:
+    if not isinstance(note_id, str) or not note_id:
+        raise TypeError("Invalid note_id")
+    try:
+        resp = (
+            g.supabase_client
+             .table("Note")
+             .select("votes")
+             .eq("note_id", note_id)
+             .single()
+             .execute()
+        )
+    except APIError as e:
+        logging.error(f"Supabase API error fetching votes for note {note_id}: {e.code} – {e.message}")
+        raise Exception(f"Failed to fetch note votes: {e.message}")
+    except Exception as e:
+        raise Exception(f"Failed to fetch note votes: {e}")
+
+    data = getattr(resp, "data", None) or {}
+    if "votes" not in data:
+        raise Exception(f"No note found with id {note_id}")
+
+    try:
+        votes = int(data["votes"])
+    except (ValueError, TypeError):
+        raise Exception(f"Invalid votes value for note {note_id}: {data['votes']}")
+
+    computed_cost = votes // 3
+    if computed_cost < 1:
+        computed_cost = 1
+    try:
+        upd = (
+            g.supabase_client
+             .table("Note")
+             .update({"cost": computed_cost})
+             .eq("note_id", note_id)
+             .execute()
+        )
+        if hasattr(upd, "count") and upd.count == 0:
+            raise Exception(f"No note found to update with id {note_id}")
+    except APIError as e:
+        logging.error(f"Supabase API error updating cost for note {note_id}: {e.code} – {e.message}")
+        raise Exception(f"Note cost update failed: {e.message}")
+    except Exception as e:
+        raise Exception(f"Note cost update failed: {e}")
