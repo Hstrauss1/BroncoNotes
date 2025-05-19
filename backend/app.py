@@ -237,6 +237,30 @@ def update_note_cost_route(note_id):
     }), 200
 
 
+@app.route("/notes/<note_id>/update-title", methods=["POST"])
+def update_note_title_route(note_id):
+    data = request.get_json() or {}
+    new_title = data.get("new_title")
+    if not new_title:
+        return jsonify({"error": "Missing new_title"}), 400
+
+    try:
+        update_note_title(note_id, new_title)
+    except TypeError as e:
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        app.logger.error("Error updating title for note %s: %s", note_id, e)
+        return jsonify({"error": str(e)}), 500
+
+    note = fetch_note_by_id(note_id)
+    if not note:
+        return jsonify({"error": "Failed to retrieve updated note"}), 500
+
+    return jsonify({
+        "note_id": note_id,
+        "new_title": note.get("title")
+    }), 200
+
 # Run app
 if __name__ == "__main__":
     app.run(debug=True)
