@@ -1,6 +1,7 @@
 import logging
 import uuid
 from flask import g
+from flask import g, request, jsonify
 from postgrest.exceptions import APIError
 from datetime import datetime, timedelta
 import mimetypes
@@ -167,6 +168,7 @@ def fetch_note_comments(note_id: str, exclude_user_id: str):
         "user_comment": user_response.data if hasattr(user_response, 'data') else None
     }
 
+<<<<<<< Updated upstream
 
 
 def update_note_cost_from_likes(note_id: str) -> None:
@@ -237,3 +239,28 @@ def update_note_title(note_id: str, new_title: str) -> None:
         raise Exception(f"Note title update failed: {e.message}")
     except Exception as e:
         raise Exception(f"Note title update failed: {e}")
+=======
+def search_notes(title_query: str):
+    """Search for notes based on the title."""
+    if not isinstance(title_query, str) or not title_query.strip():
+        return {"error": "Invalid search query"}
+
+    try:
+        response = (
+            g.supabase_client
+            .table("Note")
+            .select("note_id", "title", "storage_path")
+            .ilike("title", f"%{title_query}%")  # Case-insensitive search
+            .execute()
+        )
+
+        notes_data = response.data if hasattr(response, "data") else []
+        return {"results": notes_data}
+
+    except APIError as e:
+        logging.error(f"Supabase API error searching notes: {e.code} – {e.message}")
+        return {"error": "Database search error"}
+    except Exception as e:
+        logging.error(f"Unexpected error searching notes: {e}")
+        return {"error": "Unexpected search error"}
+>>>>>>> Stashed changes

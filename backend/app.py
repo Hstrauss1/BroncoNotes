@@ -2,7 +2,11 @@ import io
 import os
 from flask import Flask, jsonify, request, send_file
 from flask.helpers import abort
+<<<<<<< Updated upstream
 from note import create_note, fetch_note_comments, fetch_pdf_from_storage, upload_pdf_to_bucket, fetch_note_by_id, delete_note, update_note_cost_from_likes
+=======
+from note import create_note, fetch_note_comments, fetch_pdf_from_storage, upload_pdf_to_bucket, fetch_note_by_id, delete_note, search_notes
+>>>>>>> Stashed changes
 from auth import authenticate_request
 from user import fetch_user_by_id, get_or_create_user
 from interaction import like_note, comment_note, check_points, update_note_cost, update_user_points, add_tag, get_tags, InsufficientPointsError
@@ -215,6 +219,7 @@ def get_tags_endpoint(note_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
+<<<<<<< Updated upstream
 @app.route("/notes/<note_id>/update-cost", methods=["POST"])
 def update_note_cost_route(note_id):
     # Validate & update
@@ -260,6 +265,13 @@ def update_note_title_route(note_id):
         "note_id": note_id,
         "new_title": note.get("title")
     }), 200
+=======
+@app.route("/search_notes", methods=["GET"])
+def search_notes_endpoint():
+    title_query = request.args.get("title", "")
+    result = search_notes(title_query)
+    return jsonify(result)
+>>>>>>> Stashed changes
 
 # Run app
 if __name__ == "__main__":
