@@ -26,11 +26,10 @@ export default async function ViewPage({
 
   return (
     <div className="flex flex-col">
-      {/* <h1>{note.title}</h1> */}
       <PdfViewer
         url={pdfUrl}
         height={1000}
-        className="flex flex-col items-center gap-2 p-6 bg-neutral-100 flex-1 h-full overflow-y-scroll"
+        className="flex flex-col items-center gap-2 p-6 bg-neutral-100 dark:bg-neutral-900 flex-1 h-full overflow-y-scroll"
       />
     </div>
   );

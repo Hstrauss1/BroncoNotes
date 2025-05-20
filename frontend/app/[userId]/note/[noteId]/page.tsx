@@ -59,12 +59,12 @@ export default async function NotePage({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="bg-gradient-to-t from-neutral-50 to-transparent">
+      <div className="bg-gradient-to-t from-neutral-50 dark:from-neutral-800 to-transparent">
         <section className="wm-auto flex justify-between gap-12 items-center py-16">
           <div className="grid gap-6 h-fit">
             <hgroup className="grid gap-2">
               <h1>{note.title}</h1>
-              <p className="text-md text-neutral-800">
+              <p className="text-md text-neutral-800 dark:text-neutral-200">
                 Uploaded by {user.name}
               </p>
             </hgroup>

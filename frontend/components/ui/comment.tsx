@@ -15,8 +15,8 @@ export const Comment = async ({
   return (
     <div
       className={cn(
-        "bg-neutral-50 border border-neutral-200/70 rounded-lg p-4 h-fit",
-        className,
+        "bg-neutral-50 dark:bg-neutral-800 border border-neutral-200/70 dark:border-neutral-700/70 rounded-lg p-4 h-fit",
+        className
       )}
     >
       <p className="p-0">{comment}</p>
