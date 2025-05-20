@@ -2,7 +2,7 @@ import io
 import os
 from flask import Flask, jsonify, request, send_file
 from flask.helpers import abort
-from note import create_note, fetch_note_comments, fetch_pdf_from_storage, upload_pdf_to_bucket, fetch_note_by_id, delete_note
+from note import create_note, fetch_note_comments, fetch_pdf_from_storage, upload_pdf_to_bucket, fetch_note_by_id, delete_note, update_note_cost_from_likes
 from auth import authenticate_request
 from user import fetch_user_by_id, get_or_create_user
 from interaction import like_note, comment_note, check_points, update_note_cost, update_user_points, add_tag, get_tags, InsufficientPointsError
@@ -197,14 +197,12 @@ def delete_note_route(note_id):
 @app.route("/tag-note/<note_id>/tags", methods=["POST"])
 def add_tag_endpoint(note_id):
     data = request.get_json()
-    user_id = data.get("user_id")
     tag = data.get("tag")
 
-    if not user_id or not tag:
-        return jsonify({"error": "Missing user_id or tag"}), 400
-
+    if not tag:
+        return jsonify({"error": "Missing tag"}), 400
     try:
-        response = add_tag(user_id, note_id, tag)
+        response = add_tag( note_id, tag)
         return jsonify({"message": "Tag added successfully", "data": response.data}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 400
@@ -217,6 +215,51 @@ def get_tags_endpoint(note_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
+@app.route("/notes/<note_id>/update-cost", methods=["POST"])
+def update_note_cost_route(note_id):
+    # Validate & update
+    try:
+        update_note_cost_from_likes(note_id)
+    except TypeError as e:
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        app.logger.error("Error updating cost for note %s: %s", note_id, e)
+        return jsonify({"error": str(e)}), 500
+
+    # Fetch updated note to get the new cost
+    note = fetch_note_by_id(note_id)
+    if not note or "cost" not in note:
+        return jsonify({"error": "Failed to retrieve updated cost"}), 500
+
+    return jsonify({
+        "note_id":  note_id,
+        "new_cost": note["cost"]
+    }), 200
+
+
+@app.route("/notes/<note_id>/update-title", methods=["POST"])
+def update_note_title_route(note_id):
+    data = request.get_json() or {}
+    new_title = data.get("new_title")
+    if not new_title:
+        return jsonify({"error": "Missing new_title"}), 400
+
+    try:
+        update_note_title(note_id, new_title)
+    except TypeError as e:
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        app.logger.error("Error updating title for note %s: %s", note_id, e)
+        return jsonify({"error": str(e)}), 500
+
+    note = fetch_note_by_id(note_id)
+    if not note:
+        return jsonify({"error": "Failed to retrieve updated note"}), 500
+
+    return jsonify({
+        "note_id": note_id,
+        "new_title": note.get("title")
+    }), 200
 
 # Run app
 if __name__ == "__main__":
