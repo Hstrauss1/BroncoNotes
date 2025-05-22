@@ -5,7 +5,7 @@ from flask.helpers import abort
 from note import create_note, fetch_note_comments, fetch_pdf_from_storage, upload_pdf_to_bucket, fetch_note_by_id, delete_note, update_note_cost_from_likes, update_note_title
 from auth import authenticate_request
 from user import fetch_user_by_id, get_or_create_user
-from interaction import like_note, comment_note, check_points, update_note_cost, update_user_points, add_tag, get_tags, get_liked_notes, InsufficientPointsError
+from interaction import like_note, comment_note, check_points, update_note_cost, update_user_points, add_tag, get_tags, get_liked_notes, get_notes_by_tag, InsufficientPointsError
 
 app = Flask(__name__)
 
@@ -266,6 +266,14 @@ def get_liked_notes_endpoint(user_id):
     try:
         notes = get_liked_notes(user_id)
         return jsonify({"user_id": user_id, "note_ids": notes}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+@app.route("/notes-by-tag/<tag>/notes", methods=["GET"])
+def get_notes_by_tag_endpoint(tag):
+    try:
+        note_ids = get_notes_by_tag(tag)
+        return jsonify({"tag": tag, "note_ids": note_ids}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
