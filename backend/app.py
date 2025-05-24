@@ -37,12 +37,17 @@ def init_user(user_id):
 @app.route("/user/<user_id>", methods=["GET"])
 def get_user(user_id):
     try:
+        app.logger.info(f"Fetching user with id: {user_id}")
         user = fetch_user_by_id(user_id)
+        app.logger.info(f"fetch_user_by_id returned: {user}")
+        print("User object:", user)
         if user is None:
             abort(404, description="User not found")
         return jsonify(user)
     except Exception as e:
+        import traceback
         app.logger.error(f"Error fetching user {user_id}: {e}")
+        app.logger.error(traceback.format_exc())
         return jsonify({"error": str(e)}), 500
 
 @app.route("/note/<note_id>", methods=["GET"])

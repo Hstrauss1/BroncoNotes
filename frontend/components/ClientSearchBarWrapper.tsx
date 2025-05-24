@@ -1,18 +1,11 @@
-"use client";
-import { useSession, SessionProvider } from "next-auth/react";
 import React from "react";
 import SearchBar from "@/components/SearchBar";
 
-export function ClientSearchBarWrapper() {
-  return (
-    <SessionProvider>
-      <InnerClientSearchBarWrapper />
-    </SessionProvider>
-  );
-}
+type ClientSearchBarWrapperProps = {
+  isLoggedIn: boolean;
+};
 
-function InnerClientSearchBarWrapper() {
-  const { data: session } = useSession();
-  if (!session) return null;
+export function ClientSearchBarWrapper({ isLoggedIn }: ClientSearchBarWrapperProps) {
+  if (!isLoggedIn) return null;
   return <SearchBar />;
 }
