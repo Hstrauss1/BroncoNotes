@@ -1,6 +1,6 @@
 import io
 import os
-from flask import Flask, jsonify, request, send_file
+from flask import Flask, jsonify, request, send_file, make_response
 from flask.helpers import abort
 from note import create_note, fetch_note_comments, fetch_pdf_from_storage, upload_pdf_to_bucket, fetch_note_by_id, delete_note, update_note_cost_from_likes, update_note_title
 from auth import authenticate_request
@@ -36,10 +36,14 @@ def init_user(user_id):
 
 @app.route("/user/<user_id>", methods=["GET"])
 def get_user(user_id):
-    user = fetch_user_by_id(user_id)
-    if user is None:
-        abort(404, description="User not found")
-    return jsonify(user)
+    try:
+        user = fetch_user_by_id(user_id)
+        if user is None:
+            abort(404, description="User not found")
+        return jsonify(user)
+    except Exception as e:
+        app.logger.error(f"Error fetching user {user_id}: {e}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/note/<note_id>", methods=["GET"])
 def get_note(note_id):
@@ -276,6 +280,14 @@ def get_notes_by_tag_endpoint(tag):
         return jsonify({"tag": tag, "note_ids": note_ids}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
+@app.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify({'error': 'Not found', 'message': str(error)}), 404)
+
+@app.errorhandler(500)
+def internal_error(error):
+    return make_response(jsonify({'error': 'Internal server error', 'message': str(error)}), 500)
 
 # Run app
 if __name__ == "__main__":
