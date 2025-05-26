@@ -1,5 +1,6 @@
 from datetime import datetime
 from flask import g
+from collections import defaultdict
 
 class InsufficientPointsError(Exception):
     pass
@@ -219,3 +220,29 @@ def get_notes_by_tag(tag):
 
     note_ids = [entry["note_id"] for entry in tag_response.data]
     return note_ids
+
+def get_notes_by_tags_match(tags, match="all"):
+    if not tags:
+        return []
+
+    tag_response = g.supabase_client.table("Tags") \
+        .select("note_id", "tag") \
+        .in_("tag", tags) \
+        .execute()
+
+    if not tag_response.data:
+        return []
+
+    note_to_tags = defaultdict(set)
+    for entry in tag_response.data:
+        note_to_tags[entry["note_id"]].add(entry["tag"])
+
+    if match == "all":
+        return [
+            note_id for note_id, matched_tags in note_to_tags.items()
+            if all(tag in matched_tags for tag in tags)
+        ]
+    elif match == "any":
+        return list(note_to_tags.keys())
+    else:
+        raise ValueError("match must be 'all' or 'any'")
