@@ -3,6 +3,7 @@ import PdfThumbnail from "@/components/ui/PdfThumbnail";
 import { createClient } from "@/lib/supabase/server";
 import { getNotePdfBlob } from "./[noteId]/getNoteData";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 type UserNote = {
   user_id: string;
   note_id: string;
@@ -54,8 +55,10 @@ export default async function NotePage({
               const pdfUrl = `data:application/pdf;base64,${base64}`;
 
               return (
-                <div
+                <Link
+                  prefetch
                   key={n.note_id}
+                  href={`note/${n.note_id}`}
                   className="p-4 border border-neutral-200 dark:border-neutral-700 rounded bg-neutral-100 dark:bg-neutral-900 flex flex-row justify-between items-center"
                 >
                   <div className="flex flex-col flex-1 mr-4">
@@ -69,7 +72,7 @@ export default async function NotePage({
                   <div className="flex-shrink-0">
                     <PdfThumbnail url={pdfUrl} height={100} />
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>
