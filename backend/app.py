@@ -27,6 +27,7 @@ def init_user(user_id):
     if not user_id:
         return jsonify({"error": "Missing user_id in request body"}), 400
 
+    print("Initializing user with ID:", user_id)
     data = request.get_json()
     user = get_or_create_user(user_id, data["avatar"], data["name"], 10)
     if user is None:

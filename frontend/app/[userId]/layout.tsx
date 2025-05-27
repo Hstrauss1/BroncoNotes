@@ -24,6 +24,8 @@ export default async function AppLayout({
   const userId = currentUser.id;
   const user = await getUser(userId, token);
 
+  if (!user) redirect("/error");
+
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
       <AppSidebar user={user} />
