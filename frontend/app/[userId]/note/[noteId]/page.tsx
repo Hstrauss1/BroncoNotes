@@ -10,9 +10,10 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+import SettingsForm from "./SettingsForm";
 
 export default async function NotePage({
   params,
@@ -58,44 +59,10 @@ export default async function NotePage({
                       </Button>
                     </DialogTrigger>
                     <DialogContent>
-                      <DialogHeader>Settings</DialogHeader>
-                      <form className="grid gap-6">
-                        <div className="grid gap-3">
-                          <div className="flex items-center gap-4">
-                            <label htmlFor="title" className="w-36 text-right">
-                              Title
-                            </label>
-                            <Input
-                              type="text"
-                              id="title"
-                              defaultValue={note.title}
-                            />
-                          </div>
-                          <div className="flex items-center gap-4">
-                            <label htmlFor="title" className="w-36 text-right">
-                              Tag
-                            </label>
-                            <Input
-                              type="text"
-                              id="title"
-                              defaultValue={note.title}
-                            />
-                          </div>
-                          <div className="flex items-center gap-4">
-                            <label htmlFor="cost" className="w-36 text-right">
-                              Cost
-                            </label>
-                            <Input
-                              type="number"
-                              id="cost"
-                              defaultValue={note.cost}
-                            />
-                          </div>
-                        </div>
-                        <Button type="submit" variant="secondary" size="sm">
-                          Save Changes
-                        </Button>
-                      </form>
+                      <DialogHeader>
+                        <DialogTitle>Settings</DialogTitle>
+                      </DialogHeader>
+                      <SettingsForm note={note} token={token} />
                     </DialogContent>
                   </Dialog>
                   <Link href={`/${note.user_id}/note/${note.note_id}/view`}>
@@ -124,25 +91,25 @@ export default async function NotePage({
       </div>
       <hr />
       <section className="wm-auto py-12 flex-1 flex flex-col h-full">
-        {comments.note_comments || comments.user_comment ? (
-          <div>
-            <div className="flex items-center justify-between">
-              <h4>Reviews</h4>
-            </div>
-            <div className="grid grid-cols-2 gap-2 py-4">
-              {comments.user_comment && (
-                <Comment
-                  className="border-neutral-300/70"
-                  comment={comments.user_comment.review}
-                  date={comments.user_comment.create_time}
-                />
-              )}
-              {comments.note_comments?.map((c, i) => (
+        <div>
+          <div className="flex items-center justify-between">
+            <h4>Reviews</h4>
+          </div>
+          <div className="grid grid-cols-2 gap-2 py-4">
+            {comments?.user_comment && (
+              <Comment
+                className="border-neutral-300/70"
+                comment={comments.user_comment.review}
+                date={comments.user_comment.create_time}
+              />
+            )}
+            {comments?.note_comments &&
+              comments?.note_comments?.map((c, i) => (
                 <Comment key={i} comment={c.review} date={c.create_time} />
               ))}
-            </div>
           </div>
-        ) : (
+        </div>
+        {!comments?.note_comments && !comments?.user_comment && (
           <div className="flex items-center justify-center text-neutral-400">
             <p>No Reviews</p>
           </div>
