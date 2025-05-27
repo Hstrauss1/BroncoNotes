@@ -1,7 +1,8 @@
+import { Note } from "@/app/types";
 import { createClient } from "@/lib/supabase/server";
 type LikedNote = {
   user_id: string;
-  note_ids: number[];
+  notes: Note[];
 };
 
 export default async function LikesPage({
@@ -33,24 +34,26 @@ export default async function LikesPage({
   }
 
   const data = (await res.json()) as LikedNote;
-  const noteIds = data.note_ids;
-
+  const noteIds = data.notes;
+  console.log(data);
   return (
     <section className="w-full h-full">
       <hgroup className="wm-auto">
-        <h1>Liked Notes for User</h1>
+        <h1>Liked Notes</h1>
         <br />
-        <div className="w-full">
-          {noteIds.length === 0 ? (
-            <p>No liked notes found.</p>
-          ) : (
-            <ul>
-              {noteIds.map((id: number) => (
-                <li key={id}>Note ID: {id}</li>
-              ))}
-            </ul>
-          )}
-        </div>
+        {noteIds.length > 0 ? (
+          <div className="w-full grid gap-4">
+            {noteIds.map((note) => (
+              <div key={note.note_id} className="p-4 border rounded shadow">
+                <h2 className="font-bold">{note.title}</h2>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="w-full text-center text-gray-500">
+            No liked notes.
+          </div>
+        )}
       </hgroup>
     </section>
   );

@@ -273,8 +273,9 @@ def update_note_title_route(note_id):
 @app.route("/liked-notes/<user_id>/notes", methods=["GET"])
 def get_liked_notes_endpoint(user_id):
     try:
-        notes = get_liked_notes(user_id)
-        return jsonify({"user_id": user_id, "note_ids": notes}), 200
+        note_ids = get_liked_notes(user_id)
+        notes = [fetch_note_by_id(note_id) for note_id in note_ids if fetch_note_by_id(note_id) is not None]
+        return jsonify({"user_id": user_id, "notes": notes}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
