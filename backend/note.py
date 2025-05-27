@@ -236,3 +236,23 @@ def update_note_title(note_id: str, new_title: str) -> None:
         raise Exception(f"Note title update failed: {e.message}")
     except Exception as e:
         raise Exception(f"Note title update failed: {e}")
+
+def fetch_note_ids_by_user(user_id: str):
+    if not isinstance(user_id, str) or not user_id:
+        raise TypeError("Invalid user_id")
+    try:
+        response = (
+            g.supabase_client
+            .table("Note")
+            .select("note_id")
+            .eq("user_id", user_id)
+            .execute()
+        )
+    except APIError as e:
+        logging.error(f"Supabase API error fetching note ids for user {user_id}: {e.code} – {e.message}")
+        return []
+    except Exception as e:
+        logging.error(f"Unexpected error fetching note ids for user {user_id}: {e}")
+        return []
+    data = getattr(response, "data", None) or []
+    return [item["note_id"] for item in data if "note_id" in item]

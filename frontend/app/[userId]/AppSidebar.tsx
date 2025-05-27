@@ -41,7 +41,7 @@ const items = [
   },
   {
     title: "Notes",
-    url: "notes",
+    url: "note",
     icon: File,
   },
   {
