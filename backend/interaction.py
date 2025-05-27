@@ -195,3 +195,27 @@ def get_tags(note_id):
 
     tags = [entry["tag"] for entry in tag_response.data]
     return tags
+
+def get_liked_notes(user_id):
+    like_response = g.supabase_client.table("Likes") \
+        .select("note_id") \
+        .eq("user_id", user_id) \
+        .execute()
+
+    if not like_response.data:
+        return []
+
+    note_ids = [entry["note_id"] for entry in like_response.data]
+    return note_ids
+
+def get_notes_by_tag(tag):
+    tag_response = g.supabase_client.table("Tags") \
+        .select("note_id") \
+        .eq("tag", tag) \
+        .execute()
+
+    if not tag_response.data:
+        return []
+
+    note_ids = [entry["note_id"] for entry in tag_response.data]
+    return note_ids

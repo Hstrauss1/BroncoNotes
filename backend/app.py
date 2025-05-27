@@ -1,15 +1,11 @@
 import io
 import os
-from flask import Flask, jsonify, request, send_file
+from flask import Flask, jsonify, request, send_file, make_response
 from flask.helpers import abort
-<<<<<<< Updated upstream
-from note import create_note, fetch_note_comments, fetch_pdf_from_storage, upload_pdf_to_bucket, fetch_note_by_id, delete_note, update_note_cost_from_likes
-=======
-from note import create_note, fetch_note_comments, fetch_pdf_from_storage, upload_pdf_to_bucket, fetch_note_by_id, delete_note, search_notes
->>>>>>> Stashed changes
+from note import create_note, fetch_note_comments, fetch_pdf_from_storage, upload_pdf_to_bucket, fetch_note_by_id, delete_note, update_note_cost_from_likes, update_note_title
 from auth import authenticate_request
 from user import fetch_user_by_id, get_or_create_user
-from interaction import like_note, comment_note, check_points, update_note_cost, update_user_points, add_tag, get_tags, InsufficientPointsError
+from interaction import like_note, comment_note, check_points, update_note_cost, update_user_points, add_tag, get_tags, get_liked_notes, get_notes_by_tag, InsufficientPointsError
 
 app = Flask(__name__)
 
@@ -40,10 +36,19 @@ def init_user(user_id):
 
 @app.route("/user/<user_id>", methods=["GET"])
 def get_user(user_id):
-    user = fetch_user_by_id(user_id)
-    if user is None:
-        abort(404, description="User not found")
-    return jsonify(user)
+    try:
+        app.logger.info(f"Fetching user with id: {user_id}")
+        user = fetch_user_by_id(user_id)
+        app.logger.info(f"fetch_user_by_id returned: {user}")
+        print("User object:", user)
+        if user is None:
+            abort(404, description="User not found")
+        return jsonify(user)
+    except Exception as e:
+        import traceback
+        app.logger.error(f"Error fetching user {user_id}: {e}")
+        app.logger.error(traceback.format_exc())
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/note/<note_id>", methods=["GET"])
 def get_note(note_id):
@@ -219,7 +224,6 @@ def get_tags_endpoint(note_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
-<<<<<<< Updated upstream
 @app.route("/notes/<note_id>/update-cost", methods=["POST"])
 def update_note_cost_route(note_id):
     # Validate & update
@@ -265,13 +269,30 @@ def update_note_title_route(note_id):
         "note_id": note_id,
         "new_title": note.get("title")
     }), 200
-=======
-@app.route("/search_notes", methods=["GET"])
-def search_notes_endpoint():
-    title_query = request.args.get("title", "")
-    result = search_notes(title_query)
-    return jsonify(result)
->>>>>>> Stashed changes
+
+@app.route("/liked-notes/<user_id>/notes", methods=["GET"])
+def get_liked_notes_endpoint(user_id):
+    try:
+        notes = get_liked_notes(user_id)
+        return jsonify({"user_id": user_id, "note_ids": notes}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+@app.route("/notes-by-tag/<tag>/notes", methods=["GET"])
+def get_notes_by_tag_endpoint(tag):
+    try:
+        note_ids = get_notes_by_tag(tag)
+        return jsonify({"tag": tag, "note_ids": note_ids}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+@app.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify({'error': 'Not found', 'message': str(error)}), 404)
+
+@app.errorhandler(500)
+def internal_error(error):
+    return make_response(jsonify({'error': 'Internal server error', 'message': str(error)}), 500)
 
 # Run app
 if __name__ == "__main__":
