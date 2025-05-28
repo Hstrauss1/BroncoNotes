@@ -40,8 +40,7 @@ export const getUser = async (userId: string, token: string) => {
     }
   );
 
-  console.log(res);
-  if (!res.ok) redirect("/error");
+  if (!res.ok) throw new Error("Failed to fetch user data");
   return (await res.json()) as Account;
 };
 

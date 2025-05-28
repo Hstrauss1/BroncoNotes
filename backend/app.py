@@ -2,7 +2,7 @@ import io
 import os
 from flask import Flask, jsonify, request, send_file, make_response
 from flask.helpers import abort
-from note import create_note, fetch_note_comments, fetch_pdf_from_storage, upload_pdf_to_bucket, fetch_note_by_id, delete_note, update_note_cost_from_likes, update_note_title
+from note import create_note, fetch_note_comments, fetch_note_ids_by_user, fetch_pdf_from_storage, upload_pdf_to_bucket, fetch_note_by_id, delete_note, update_note_cost_from_likes, update_note_title
 from auth import authenticate_request
 from user import fetch_user_by_id, get_or_create_user
 from interaction import like_note, comment_note, check_points, update_note_cost, update_user_points, add_tag, get_tags, get_liked_notes, get_notes_by_tag, get_notes_by_tags_match, InsufficientPointsError
@@ -27,6 +27,7 @@ def init_user(user_id):
     if not user_id:
         return jsonify({"error": "Missing user_id in request body"}), 400
 
+    print("Initializing user with ID:", user_id)
     data = request.get_json()
     user = get_or_create_user(user_id, data["avatar"], data["name"], 10)
     if user is None:
@@ -56,6 +57,15 @@ def get_note(note_id):
     if note is None:
         abort(404, description="Note not found")
     return jsonify(note)
+
+@app.route("/user/<user_id>/note-ids", methods=["GET"])
+def get_note_ids_by_user(user_id):
+    try:
+        note_ids = fetch_note_ids_by_user(user_id)
+        notes = [fetch_note_by_id(note_id) for note_id in note_ids if fetch_note_by_id(note_id) is not None]
+        return jsonify({"user_id": user_id, "notes": notes, "note_ids": note_ids}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 @app.route('/note/<note_id>/comments/<user_id>', methods=['GET'])
 def get_comments(note_id,user_id):
@@ -273,8 +283,9 @@ def update_note_title_route(note_id):
 @app.route("/liked-notes/<user_id>/notes", methods=["GET"])
 def get_liked_notes_endpoint(user_id):
     try:
-        notes = get_liked_notes(user_id)
-        return jsonify({"user_id": user_id, "note_ids": notes}), 200
+        note_ids = get_liked_notes(user_id)
+        notes = [fetch_note_by_id(note_id) for note_id in note_ids if fetch_note_by_id(note_id) is not None]
+        return jsonify({"user_id": user_id, "notes": notes}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 

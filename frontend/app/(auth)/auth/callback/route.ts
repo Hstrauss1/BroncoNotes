@@ -18,20 +18,25 @@ export async function GET(request: Request) {
       const forwardedHost = request.headers.get("x-forwarded-host");
       const isLocalEnv = process.env.NODE_ENV === "development";
       const user = session?.user;
-      let redirectTo = next.replace("/user", `/${user.id}`);
-
+      let redirectTo = next.replace("user", `${user.id}`);
+      console.log("User ID:", user.id);
       // Check if the user already exists
-      const userDb = await getUser(user.id, session?.access_token);
 
-      // If the user does not exist, initialize them
-      if (!userDb) {
+      try {
+        await getUser(user.id, session?.access_token);
+        console.log("User already exists, redirecting...");
+      } catch (error) {
+        console.log(error);
+        console.log(user);
+
+        // If the user does not exist, initialize them
         await initializeUser(
           user.id,
           user.user_metadata.avatar_url,
           user.user_metadata.name,
           session?.access_token
         );
-        redirectTo = next.replace(`/${user.id}`, `/${user.id}/onboarding`);
+        redirectTo = next.replace(`user`, `/${user.id}/onboarding`);
       }
 
       if (isLocalEnv) {
