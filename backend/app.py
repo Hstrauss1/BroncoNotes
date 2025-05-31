@@ -120,7 +120,22 @@ def upload_note():
         print("create_note failed:", e)
         return jsonify({"error": str(e)}), 500
 
-    return jsonify({"note_id": note_id, "pdf_path": storage_path})
+    # Handle tags
+    tags = []
+    tags_count = request.form.get("tags-count", type=int)
+    if tags_count:
+        for i in range(1, tags_count + 1):
+            tag_value = request.form.get(f"tags-{i}")
+            if tag_value:
+                tags.append(tag_value)
+        if tags:
+            try:
+                add_tag(note_id, tags)
+            except Exception as e:
+                print("add_tag failed:", e)
+                return jsonify({"error": f"Note created but failed to add tags: {str(e)}"}), 500
+
+    return jsonify({"note_id": note_id, "pdf_path": storage_path, "tags": tags})
 
 @app.route('/update_points', methods=['POST'])
 def update_points():
@@ -212,19 +227,6 @@ def delete_note_route(note_id):
         return jsonify({"status": "success", "message": f"Note {note_id} deleted"})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 400
-
-@app.route("/tag-note/<note_id>/tags", methods=["POST"])
-def add_tag_endpoint(note_id):
-    data = request.get_json()
-    tag = data.get("tag")
-
-    if not tag:
-        return jsonify({"error": "Missing tag"}), 400
-    try:
-        response = add_tag( note_id, tag)
-        return jsonify({"message": "Tag added successfully", "data": response.data}), 201
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
     
 @app.route("/get-tags/<note_id>/tags", methods=["GET"])
 def get_tags_endpoint(note_id):

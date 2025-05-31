@@ -41,7 +41,7 @@ export default function CreatePage() {
           />
         </Field>
         <Field label="Tags">
-          <TagInput name="tags" />
+          <TagInput />
         </Field>
         <Field label="Upload PDF">
           <Input

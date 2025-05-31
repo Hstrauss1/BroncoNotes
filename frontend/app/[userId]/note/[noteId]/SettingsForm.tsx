@@ -52,7 +52,7 @@ export default function SettingsForm({
             <Input type="text" id="title" defaultValue={note.title} />
           </Field>
           <Field label="Tags" flow="row">
-            <TagInput name="tags" />
+            <TagInput />
           </Field>
         </div>
         <Button type="submit" variant="secondary" size="sm">

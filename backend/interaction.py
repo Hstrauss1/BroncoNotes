@@ -159,7 +159,7 @@ def unlocked_note(user_id, note_id):
 
     return response
 
-def add_tag(note_id, tag):
+def add_tag(note_id, tags):
     note_response = g.supabase_client.table("Note") \
         .select("note_id") \
         .eq("note_id", note_id) \
@@ -168,22 +168,28 @@ def add_tag(note_id, tag):
 
     if not note_response.data:
         raise Exception("Note not found.")
-  
-    tag_exists = g.supabase_client.table("Tags") \
-        .select("*") \
-        .eq("note_id", note_id) \
-        .eq("tag", tag) \
-        .execute()
 
-    if tag_exists.data:
-        raise Exception("This tag already exists for the note.")
+    if not isinstance(tags, list):
+        raise Exception("tags must be a list of strings.")
 
-    response = g.supabase_client.table("Tags").insert({
-        "note_id": note_id,
-        "tag": tag
-    }).execute()
+    added_tags = []
+    for tag in tags:
+        tag_exists = g.supabase_client.table("Tags") \
+            .select("*") \
+            .eq("note_id", note_id) \
+            .eq("tag", tag) \
+            .execute()
 
-    return response
+        if tag_exists.data:
+            continue  # Skip existing tags
+
+        response = g.supabase_client.table("Tags").insert({
+            "note_id": note_id,
+            "tag": tag
+        }).execute()
+        added_tags.append(response.data)
+
+    return added_tags
 
 def get_tags(note_id):
     tag_response = g.supabase_client.table("Tags") \

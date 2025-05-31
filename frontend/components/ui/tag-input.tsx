@@ -4,7 +4,7 @@ import { Input } from "./input";
 import { Button } from "./button";
 import { Plus } from "lucide-react";
 
-function TagInput({ name }: { name: string }) {
+function TagInput({ name = "tags" }: { name?: string }) {
   const [tags, setTags] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
 
