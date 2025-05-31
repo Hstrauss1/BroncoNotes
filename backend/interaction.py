@@ -246,3 +246,61 @@ def get_notes_by_tags_match(tags, match="all"):
         return list(note_to_tags.keys())
     else:
         raise ValueError("match must be 'all' or 'any'")
+    
+def update_tag(note_id, old_tag, new_tag):
+    note_response = g.supabase_client.table("Note") \
+        .select("note_id") \
+        .eq("note_id", note_id) \
+        .single() \
+        .execute()
+
+    if not note_response.data:
+        raise Exception("Note not found.")
+
+    tag_response = g.supabase_client.table("Tags") \
+        .select("id") \
+        .eq("note_id", note_id) \
+        .eq("tag", old_tag) \
+        .single() \
+        .execute()
+
+    if not tag_response.data:
+        raise Exception("Old tag not found.")
+
+    tag_id = tag_response.data["id"]
+
+    new_tag_exists = g.supabase_client.table("Tags") \
+        .select("id") \
+        .eq("note_id", note_id) \
+        .eq("tag", new_tag) \
+        .execute()
+
+    if new_tag_exists.data:
+        raise Exception("The new tag already exists for this note.")
+
+    response = g.supabase_client.table("Tags") \
+        .update({"tag": new_tag}) \
+        .eq("id", tag_id) \
+        .execute()
+
+    return response
+
+def delete_tag(note_id, tag):
+    tag_response = g.supabase_client.table("Tags") \
+        .select("id") \
+        .eq("note_id", note_id) \
+        .eq("tag", tag) \
+        .single() \
+        .execute()
+
+    if not tag_response.data:
+        raise Exception("Tag not found.")
+
+    tag_id = tag_response.data["id"]
+
+    response = g.supabase_client.table("Tags") \
+        .delete() \
+        .eq("id", tag_id) \
+        .execute()
+
+    return response

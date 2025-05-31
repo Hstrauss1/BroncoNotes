@@ -5,7 +5,7 @@ from flask.helpers import abort
 from note import create_note, fetch_note_comments, fetch_note_ids_by_user, fetch_pdf_from_storage, upload_pdf_to_bucket, fetch_note_by_id, delete_note, update_note_cost_from_likes, update_note_title
 from auth import authenticate_request
 from user import fetch_user_by_id, get_or_create_user
-from interaction import like_note, comment_note, check_points, update_note_cost, update_user_points, add_tag, get_tags, get_liked_notes, get_notes_by_tag, get_notes_by_tags_match, InsufficientPointsError
+from interaction import like_note, comment_note, check_points, update_note_cost, update_user_points, add_tag, get_tags, get_liked_notes, get_notes_by_tag, get_notes_by_tags_match, update_tag, delete_tag, InsufficientPointsError
 
 app = Flask(__name__)
 
@@ -325,6 +325,35 @@ def get_notes_by_tags_endpoint():
         return jsonify({"error": str(ve)}), 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@app.route("/tag-note/<note_id>/tags", methods=["PUT"])
+def update_tag_endpoint(note_id):
+    data = request.get_json()
+    old_tag = data.get("old_tag")
+    new_tag = data.get("new_tag")
+
+    if not old_tag or not new_tag:
+        return jsonify({"error": "Both old_tag and new_tag are required"}), 400
+
+    try:
+        response = update_tag(note_id, old_tag, new_tag)
+        return jsonify({"message": "Tag updated successfully", "data": response.data}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+    
+@app.route("/tag-note/<note_id>/tags", methods=["DELETE"])
+def delete_tag_endpoint(note_id):
+    data = request.get_json()
+    tag = data.get("tag")
+
+    if not tag:
+        return jsonify({"error": "Tag is required"}), 400
+
+    try:
+        response = delete_tag(note_id, tag)
+        return jsonify({"message": "Tag deleted successfully", "data": response.data}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 # Run app
 if __name__ == "__main__":
