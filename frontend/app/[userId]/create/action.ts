@@ -15,7 +15,7 @@ export const createNote = async (_: unknown, formData: FormData) => {
           Authorization: `Bearer ${token}`,
         },
         body: formData,
-      },
+      }
     );
 
     if (!response.ok) throw new Error("Upload failed");

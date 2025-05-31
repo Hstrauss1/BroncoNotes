@@ -6,6 +6,8 @@ import { useActionState, useEffect } from "react";
 import { createNote } from "./action";
 import { Loader, PlusSquare } from "lucide-react";
 import { toast } from "sonner";
+import Field from "@/components/ui/Field";
+import TagInput from "@/components/ui/tag-input";
 
 export default function CreatePage() {
   const { userId } = useParams<{ userId: string }>();
@@ -24,24 +26,24 @@ export default function CreatePage() {
     <section className="w-full h-full flex items-center justify-center flex-col gap-10">
       <h1>Create a New Note</h1>
       <form
-        className="grid gap-6 min-w-[28rem] p-6 border border-neutral-300/70 dark:border-neutral-700/70 shadow-xs bg-white dark:bg-neutral-800 rounded-3xl"
+        className="grid gap-5 min-w-[28rem] p-6 border border-neutral-300/70 dark:border-neutral-700/70 shadow-xs bg-white dark:bg-neutral-800 rounded-3xl"
         action={action}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") e.preventDefault();
+        }}
       >
-        <div className="grid gap-2">
-          <label>Title of your note</label>
+        <Field label="Title of your note">
           <Input
             type="text"
             placeholder="Fall quarter 2024"
             name="title"
             required
           />
-        </div>
-        <div className="grid gap-2">
-          <label>Course Name</label>
-          <Input placeholder="CSEN 146" name="tag" />
-        </div>
-        <div className="grid gap-2">
-          <label>Upload Note</label>
+        </Field>
+        <Field label="Tags">
+          <TagInput name="tags" />
+        </Field>
+        <Field label="Upload PDF">
           <Input
             type="file"
             placeholder="Title"
@@ -49,7 +51,7 @@ export default function CreatePage() {
             accept="application/pdf"
             required
           />
-        </div>
+        </Field>
         <input hidden readOnly name="user_id" value={userId} />
         <Button type="submit" disabled={pending}>
           {pending ? <Loader className="animate-spin" /> : <PlusSquare />}

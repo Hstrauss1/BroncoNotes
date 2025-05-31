@@ -48,11 +48,11 @@ export default function SettingsForm({
         }}
       >
         <div className="grid gap-3">
-          <Field label="Title">
+          <Field label="Title" flow="row">
             <Input type="text" id="title" defaultValue={note.title} />
           </Field>
-          <Field label="Tags">
-            <TagInput />
+          <Field label="Tags" flow="row">
+            <TagInput name="tags" />
           </Field>
         </div>
         <Button type="submit" variant="secondary" size="sm">
