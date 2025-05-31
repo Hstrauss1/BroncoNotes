@@ -7,6 +7,8 @@ import { Loader, Trash } from "lucide-react";
 import React, { useActionState, useEffect } from "react";
 import { toast } from "sonner";
 import { deleteNote } from "./action";
+import TagInput from "@/components/ui/tag-input";
+import Field from "@/components/ui/Field";
 
 export default function SettingsForm({
   note,
@@ -37,23 +39,21 @@ export default function SettingsForm({
       toast.error("Failed to delete note. Please try again.");
     }
   }, [deleteState]);
-
   return (
     <div>
-      <form className="grid gap-6">
+      <form
+        className="grid gap-6"
+        onKeyDown={(e) => {
+          if (e.key === "Enter") e.preventDefault();
+        }}
+      >
         <div className="grid gap-3">
-          <div className="flex items-center gap-4">
-            <label htmlFor="title" className="w-36 text-right">
-              Title
-            </label>
+          <Field label="Title">
             <Input type="text" id="title" defaultValue={note.title} />
-          </div>
-          <div className="flex items-center gap-4">
-            <label htmlFor="title" className="w-36 text-right">
-              Tag
-            </label>
-            <Input type="text" id="title" defaultValue={note.title} />
-          </div>
+          </Field>
+          <Field label="Tags">
+            <TagInput />
+          </Field>
         </div>
         <Button type="submit" variant="secondary" size="sm">
           Save Changes
