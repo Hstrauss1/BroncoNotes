@@ -5,7 +5,7 @@ from flask.helpers import abort
 from note import create_note, fetch_note_comments, fetch_note_ids_by_user, fetch_pdf_from_storage, upload_pdf_to_bucket, fetch_note_by_id, delete_note, update_note_cost_from_likes, update_note_title
 from auth import authenticate_request
 from user import fetch_user_by_id, get_or_create_user
-from interaction import like_note, comment_note, check_points, update_note_cost, update_user_points, add_tag, get_tags, get_liked_notes, get_notes_by_tag, InsufficientPointsError
+from interaction import like_note, comment_note, check_points, update_note_cost, update_user_points, add_tag, get_tags, get_liked_notes, get_notes_by_tag, get_notes_by_tags_match, InsufficientPointsError
 
 app = Flask(__name__)
 
@@ -304,6 +304,27 @@ def not_found(error):
 @app.errorhandler(500)
 def internal_error(error):
     return make_response(jsonify({'error': 'Internal server error', 'message': str(error)}), 500)
+
+@app.route("/notes-by-tags_match", methods=["GET"])
+def get_notes_by_tags_endpoint():
+    try:
+        tag_string = request.args.get("tags")
+        match_mode = request.args.get("match", "all").lower()
+
+        if not tag_string:
+            return jsonify({"error": "tags query parameter is required"}), 400
+
+        tags = [tag.strip() for tag in tag_string.split(",") if tag.strip()]
+        if not tags:
+            return jsonify({"error": "No valid tags provided"}), 400
+
+        note_ids = get_notes_by_tags_match(tags, match_mode)
+        return jsonify({"tags": tags, "match": match_mode, "note_ids": note_ids}), 200
+
+    except ValueError as ve:
+        return jsonify({"error": str(ve)}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # Run app
 if __name__ == "__main__":
