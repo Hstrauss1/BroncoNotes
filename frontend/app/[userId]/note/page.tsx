@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import ListMyNotes from "./ListMyNotes";
 import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default async function NotePage({
   params,
@@ -27,8 +28,8 @@ export default async function NotePage({
                   key={index}
                   className="p-4 bg-white dark:bg-neutral-800 border border-neutral-300/50 dark:border-neutral-700/50 rounded-xl shadow-xs animate-pulse flex flex-col gap-2 h-32"
                 >
-                  <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-3/4" />
-                  <div className="h-3 bg-neutral-200 dark:bg-neutral-700 rounded w-1/2" />
+                  <Skeleton className="h-4 rounded w-3/4" />
+                  <Skeleton className="h-3 rounded w-1/2" />
                 </div>
               ))}
           >
