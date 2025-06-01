@@ -17,6 +17,8 @@ export type Like = {
   user_id: string;
 };
 
+export type Tags = string[];
+
 export type Note = {
   note_id: string;
   user_id: string;
@@ -24,6 +26,7 @@ export type Note = {
   title: string;
   storage_path: string;
   cost: number;
+  tags: Tags;
 };
 
 export type Unlocked = {

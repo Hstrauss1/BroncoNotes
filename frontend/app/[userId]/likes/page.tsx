@@ -1,5 +1,6 @@
 import { Note } from "@/app/types";
 import { createClient } from "@/lib/supabase/server";
+
 type LikedNote = {
   user_id: string;
   notes: Note[];
@@ -39,7 +40,7 @@ export default async function LikesPage({
   return (
     <section className="w-full h-full">
       <hgroup className="wm-auto">
-        <h1>Liked Notes</h1>
+        <h1 className="pt-10 pb-5">Liked Notes</h1>
         <br />
         {noteIds.length > 0 ? (
           <div className="w-full grid gap-4">

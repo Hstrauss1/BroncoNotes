@@ -20,6 +20,21 @@ export const getNoteData = async (noteId: string, token: string) => {
   return (await noteRes.json()) as Note;
 };
 
+export const getNoteTags = async (noteId: string, token: string) => {
+  const tagsRes = await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/note/${noteId}/tags`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  if (!tagsRes.ok) redirect("/error");
+  return (await tagsRes.json()) as string[];
+};
+
 export const getNoteAuthor = async (authorId: string) => {
   const supabase = await createClient();
   const user = (await supabase.auth.getUser(authorId)).data.user;

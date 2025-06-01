@@ -2,7 +2,8 @@
 import React, { useState } from "react";
 import { Input } from "./input";
 import { Button } from "./button";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
+import Tag from "./tag";
 
 function TagInput({ name = "tags" }: { name?: string }) {
   const [tags, setTags] = useState<string[]>([]);
@@ -42,10 +43,7 @@ function TagInput({ name = "tags" }: { name?: string }) {
       <input type="hidden" name={`${name}-count`} value={tags.length} />
       <div className="flex flex-wrap gap-1">
         {tags.map((tag, index) => (
-          <span
-            key={index}
-            className="bg-white dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600 shadow-xs rounded-full px-3 py-1 text-black dark:text-white flex items-center gap-2"
-          >
+          <Tag key={index} name={tag}>
             <input
               type="hidden"
               name={`${name}-${index + 1}`}
@@ -54,15 +52,14 @@ function TagInput({ name = "tags" }: { name?: string }) {
                 .replace(/\s+/g, "-")
                 .replace(/[^a-z0-9\-]/g, "")}
             />
-            {tag}
             <button
               type="button"
-              className="cursor-pointer hover:opacity-50"
+              className="[&_svg]:size-3.5 [&_svg]:shrink-0 cursor-pointer opacity-50 hover:opacity-30"
               onClick={() => removeTag(index)}
             >
-              &times;
+              <X />
             </button>
-          </span>
+          </Tag>
         ))}
       </div>
     </div>

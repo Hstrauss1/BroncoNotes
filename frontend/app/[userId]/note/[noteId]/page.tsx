@@ -14,6 +14,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import SettingsForm from "./SettingsForm";
+import Tag from "@/components/ui/tag";
 
 export default async function NotePage({
   params,
@@ -42,6 +43,9 @@ export default async function NotePage({
       <div className="bg-gradient-to-t from-neutral-50 dark:from-neutral-800 to-transparent">
         <section className="wm-auto flex justify-between gap-12 items-center py-16">
           <div className="grid gap-6 h-fit">
+            {note.tags.map((tag, index) => (
+              <Tag key={index} name={tag} />
+            ))}
             <hgroup className="grid gap-2">
               <h1>{note.title}</h1>
               <p className="text-md text-neutral-800 dark:text-neutral-200">

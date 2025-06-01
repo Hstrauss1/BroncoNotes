@@ -56,13 +56,20 @@ def get_note(note_id):
     note = fetch_note_by_id(note_id)
     if note is None:
         abort(404, description="Note not found")
+    tags = get_tags(note_id)
+    note["tags"] = tags
     return jsonify(note)
 
-@app.route("/user/<user_id>/note-ids", methods=["GET"])
+@app.route("/user/<user_id>/notes", methods=["GET"])
 def get_note_ids_by_user(user_id):
     try:
         note_ids = fetch_note_ids_by_user(user_id)
-        notes = [fetch_note_by_id(note_id) for note_id in note_ids if fetch_note_by_id(note_id) is not None]
+        notes = []
+        for note_id in note_ids:
+            note = fetch_note_by_id(note_id)
+            if note is not None:
+                note["tags"] = get_tags(note_id)
+                notes.append(note)
         return jsonify({"user_id": user_id, "notes": notes, "note_ids": note_ids}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
@@ -227,14 +234,6 @@ def delete_note_route(note_id):
         return jsonify({"status": "success", "message": f"Note {note_id} deleted"})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 400
-    
-@app.route("/get-tags/<note_id>/tags", methods=["GET"])
-def get_tags_endpoint(note_id):
-    try:
-        tags = get_tags(note_id)
-        return jsonify({"note_id": note_id, "tags": tags}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
 
 @app.route("/notes/<note_id>/update-cost", methods=["POST"])
 def update_note_cost_route(note_id):
