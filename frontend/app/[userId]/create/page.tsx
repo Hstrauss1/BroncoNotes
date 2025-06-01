@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useParams } from "next/navigation";
+import { redirect, useParams } from "next/navigation";
 import { useActionState, useEffect } from "react";
 import { createNote } from "./action";
 import { Loader, PlusSquare } from "lucide-react";
@@ -16,11 +16,12 @@ export default function CreatePage() {
 
   useEffect(() => {
     if (state?.status === "success") {
-      toast("Note successfuly created");
+      toast.success("Note created successfully!");
+      redirect(`/${userId}/note/${state.data.note_id}`);
     } else if (state?.status === "error") {
-      toast("Something went wrong");
+      toast.error("Something went wrong");
     }
-  }, [state]);
+  }, [state, userId]);
 
   return (
     <section className="w-full h-full flex items-center justify-center flex-col gap-10">
