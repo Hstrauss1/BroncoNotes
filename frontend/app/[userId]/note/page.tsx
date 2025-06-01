@@ -24,13 +24,13 @@ export default async function NotePage({
             fallback={Array(8)
               .fill(0)
               .map((_, index) => (
-                <div
+                <Skeleton
                   key={index}
-                  className="p-4 bg-white dark:bg-neutral-800 border border-neutral-300/50 dark:border-neutral-700/50 rounded-xl shadow-xs animate-pulse flex flex-col gap-2 h-32"
+                  className="p-4 bg-white dark:bg-neutral-800 border border-neutral-300/50 dark:border-neutral-700/50 rounded-xl shadow-xs flex flex-col gap-2 h-32"
                 >
                   <Skeleton className="h-4 rounded w-3/4" />
                   <Skeleton className="h-3 rounded w-1/2" />
-                </div>
+                </Skeleton>
               ))}
           >
             <ListMyNotes userId={userId} token={token} />
