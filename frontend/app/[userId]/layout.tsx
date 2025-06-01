@@ -29,11 +29,11 @@ export default async function AppLayout({
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
       <AppSidebar user={user} />
-      <main className="flex flex-col flex-1 bg-white dark:bg-neutral-900">
+      <main className="flex flex-col flex-1 bg-neutral-50 dark:bg-neutral-900">
         <div className="border-b border-neutral-300/70 dark:border-neutral-700/70 bg-white dark:bg-neutral-800 sticky top-0 h-11 flex items-center px-2 z-10">
           <SidebarTrigger />
         </div>
-        <div className="flex-1 bg-transparent">{children}</div>
+        <div className="flex-1">{children}</div>
         <CommandMenu />
       </main>
     </SidebarProvider>

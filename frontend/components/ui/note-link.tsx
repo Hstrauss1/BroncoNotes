@@ -21,7 +21,7 @@ export default async function NoteLink({
     <Link
       key={note.note_id}
       href={`note/${note.note_id}`}
-      className="p-4 border border-neutral-300/50 dark:border-neutral-700/50 rounded-xl bg-gradient-to-r from-neutral-100 to white dark:from-neutral-800 dark:to-neutral-900 flex flex-row justify-between items-center gap-4 hover:border-neutral-300 dark:hover:border-neutral-700"
+      className="p-4 border border-neutral-300/50 dark:border-neutral-700/50 rounded-xl bg-white dark:bg-neutral-800 flex flex-row justify-between items-center gap-4 hover:border-neutral-300 dark:hover:border-neutral-700 shadow-xs"
       prefetch
     >
       <div className="flex-1 flex flex-col gap-1 h-full">

@@ -9,9 +9,9 @@ type LikedNote = {
 export default async function LikesPage({
   params,
 }: {
-  params: { userId: string };
+  params: Promise<{ userId: string }>;
 }) {
-  const { userId } = params;
+  const { userId } = await params;
   const supabase = await createClient();
   const session = await supabase.auth.getSession();
   const token = session.data.session?.access_token;
