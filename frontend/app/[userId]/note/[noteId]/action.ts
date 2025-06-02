@@ -44,3 +44,34 @@ export const unlockNote = async (fromData: FormData, token: string) => {
   console.log("Note unlocked successfully:", result);
   return result;
 };
+
+export const isNoteUnlocked = async (
+  noteId: string,
+  userId: string,
+  token: string
+) => {
+  const params = new URLSearchParams({ note_id: noteId, user_id: userId });
+
+  const response = await fetch(
+    `${
+      process.env.NEXT_PUBLIC_BACKEND_ENDPOINT
+    }/is_note_unlocked?${params.toString()}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to check note unlock status");
+  }
+
+  return (await response.json()) as {
+    note_id: string;
+    user_id: string;
+    is_unlocked: boolean;
+  };
+};

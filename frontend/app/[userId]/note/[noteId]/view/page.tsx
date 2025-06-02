@@ -1,6 +1,7 @@
 import PdfViewer from "@/components/PdfViewer";
 import { getNoteData, getNotePdfBlob } from "../getNoteData";
 import { createClient } from "@/lib/supabase/server";
+import { isNoteUnlocked } from "../action";
 
 export default async function ViewPage({
   params,
@@ -10,12 +11,16 @@ export default async function ViewPage({
   const { noteId } = await params;
 
   const supabase = await createClient();
-  const session = await supabase.auth.getSession();
-  const token = session.data.session?.access_token;
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
-  if (!token) {
-    return null; // Handle the case when the token is not available
-  }
+  if (!session) return null;
+
+  const {
+    user: { id: userId },
+    access_token: token,
+  } = session;
 
   const note = await getNoteData(noteId, token);
   const pdfBlob = await getNotePdfBlob(note.storage_path, token);
@@ -23,6 +28,18 @@ export default async function ViewPage({
   const arrayBuffer = await pdfBlob.arrayBuffer();
   const base64 = Buffer.from(arrayBuffer).toString("base64");
   const pdfUrl = `data:application/pdf;base64,${base64}`;
+
+  const { is_unlocked } = await isNoteUnlocked(note.note_id, userId, token);
+
+  if (!is_unlocked) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4 h-full">
+        <h1>Note is locked</h1>
+        <p>Please unlock the note to view its content.</p>
+        {/* Add your unlock note component here */}
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col">
