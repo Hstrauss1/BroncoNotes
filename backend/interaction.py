@@ -310,3 +310,12 @@ def delete_tag(note_id, tag):
         .execute()
 
     return response
+
+def is_note_unlocked(user_id, note_id):
+    exists = g.supabase_client.table("Unlocked") \
+        .select("*") \
+        .eq("user_id", user_id) \
+        .eq("note_id", note_id) \
+        .execute()
+
+    return bool(exists.data)
