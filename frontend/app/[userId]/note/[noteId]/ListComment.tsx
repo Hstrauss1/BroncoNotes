@@ -2,6 +2,7 @@ import { Comment } from "@/components/ui/comment";
 import React from "react";
 import { getNoteComments, getNoteData } from "./getNoteData";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Session } from "@supabase/supabase-js";
 
 export function ListCommentSkeleton() {
   return Array.from({ length: 5 }).map((_, i) => (
@@ -11,11 +12,12 @@ export function ListCommentSkeleton() {
 
 export default async function ListComment({
   noteId,
-  token,
+  session,
 }: {
   noteId: string;
-  token: string;
+  session: Session;
 }) {
+  const { access_token: token } = session;
   const { user_id } = await getNoteData(noteId, token);
   const comments = await getNoteComments(noteId, user_id, token);
 

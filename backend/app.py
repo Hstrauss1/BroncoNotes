@@ -186,6 +186,7 @@ def unlock_note():
         if not user_id or not note_id:
             return jsonify({"error": "Missing user_id or note_id"}), 400
 
+        print(f"Unlocking note {note_id} for user {user_id}")
         result = check_points(user_id, note_id)
         return jsonify(result), 200
     

@@ -10,11 +10,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Eye, Lock, Settings, ThumbsUp } from "lucide-react";
+import { Eye, Settings, ThumbsUp } from "lucide-react";
 import SettingsForm from "./SettingsForm";
 import Link from "next/link";
 import PdfThumbnail from "@/components/ui/PdfThumbnail";
 import { Skeleton } from "@/components/ui/skeleton";
+import UnlockNote from "./UnlockNote";
+import { Session } from "@supabase/supabase-js";
 
 export function NoteInfoSkeleton() {
   return (
@@ -36,13 +38,15 @@ export function NoteInfoSkeleton() {
 
 export default async function NoteInfo({
   noteId,
-  token,
-  userId,
+  session,
 }: {
   noteId: string;
-  token: string;
-  userId: string;
+  session: Session;
 }) {
+  const {
+    user: { id: userId },
+    access_token: token,
+  } = session;
   const note = await getNoteData(noteId, token);
   const pdfBlob = await getNotePdfBlob(note.storage_path, token);
   const user = await getUser(note.user_id, token);
@@ -89,10 +93,7 @@ export default async function NoteInfo({
             </>
           ) : (
             <>
-              <Button variant="action" size="sm" className="w-fit">
-                <Lock />
-                Unlock with {note.cost} Points
-              </Button>
+              <UnlockNote note={note} session={session} />
               <Button variant="secondary" size="sm">
                 <ThumbsUp />
                 {note.votes} Likes

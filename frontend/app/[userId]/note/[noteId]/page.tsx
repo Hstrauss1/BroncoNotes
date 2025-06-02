@@ -13,17 +13,15 @@ export default async function NotePage({
   const {
     data: { session },
   } = await supabase.auth.getSession();
-  const userId = session?.user.id;
-  const token = session?.access_token;
 
-  if (!userId || !token) return null;
+  if (!session) return null;
 
   return (
     <div className="flex flex-col h-full">
       <div className="bg-transparent shadow-inner">
         <section className="wm-auto flex justify-between gap-12 items-center py-16">
           <Suspense fallback={<NoteInfoSkeleton />}>
-            <NoteInfo noteId={noteId} token={token} userId={userId} />
+            <NoteInfo noteId={noteId} session={session} />
           </Suspense>
         </section>
       </div>
@@ -36,7 +34,7 @@ export default async function NotePage({
             </div>
             <div className="grid grid-cols-2 gap-2 py-4">
               <Suspense fallback={<ListCommentSkeleton />}>
-                <ListComment noteId={noteId} token={token} />
+                <ListComment noteId={noteId} session={session} />
               </Suspense>
             </div>
           </div>
