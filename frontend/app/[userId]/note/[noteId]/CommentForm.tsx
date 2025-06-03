@@ -56,8 +56,8 @@ export const CommentForm = ({
       className={cn("w-full flex items-center gap-1.5", className)}
       action={commentAction}
     >
-      <input type="hidden" name="note_id" value={noteId} />
-      <input type="hidden" name="user_id" value={userId} />
+      <input type="hidden" name="note-id" value={noteId} />
+      <input type="hidden" name="user-id" value={userId} />
       <Input placeholder="Add a review..." className="flex-1" name="comment" />
       <Button type="submit" disabled={loading}>
         {loading ? <Loader className="animate-spin" /> : <Send />}

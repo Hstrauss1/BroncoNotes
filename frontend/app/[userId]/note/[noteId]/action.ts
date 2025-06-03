@@ -122,7 +122,7 @@ export const commentOnNote = async (formData: FormData, token: string) => {
   }
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/comment_on_note`,
+    `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/comment`,
     {
       method: "POST",
       headers: {
