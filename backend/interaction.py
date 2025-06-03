@@ -103,11 +103,18 @@ def like_note(user_id, note_id):
     if user_id == note_user_id:
         raise Exception("Users cannot like their own notes.")
     
-    current_votes = note_response.data.get("votes", 0)
+    current_votes = note_response.data["votes"]
+    new_votes = current_votes + 1
     g.supabase_client.table("Note") \
-        .update({"votes": current_votes + 1}) \
+        .update({"votes": new_votes}) \
         .eq("note_id", note_id) \
         .execute()
+    
+    # current_votes = note_response.data.get("votes", 0)
+    # g.supabase_client.table("Note") \
+    #     .update({"votes": current_votes + 1}) \
+    #     .eq("note_id", note_id) \
+    #     .execute()
     
     update_note_cost(note_id)
     update_user_points(note_user_id)
@@ -142,11 +149,17 @@ def comment_note(user_id, note_id, comment_text):
         "create_time": create_timestamp
     }).execute()
 
-    current_votes = note_response.data.get("votes", 0)
+    current_votes = note_response.data["votes"]
+    new_votes = current_votes + 1
     g.supabase_client.table("Note") \
-        .update({"votes": current_votes + 1}) \
+        .update({"votes": new_votes}) \
         .eq("note_id", note_id) \
         .execute()
+    
+    # g.supabase_client.table("Note") \
+    #     .update({"votes": current_votes + 1}) \
+    #     .eq("note_id", note_id) \
+    #     .execute()
 
     return response.data
 
