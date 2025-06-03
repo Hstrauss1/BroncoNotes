@@ -2,6 +2,8 @@
 import { generateText, tool } from "ai";
 import { z } from "zod";
 import { google } from "@ai-sdk/google";
+import { getNoteData } from "./note/[noteId]/getNoteData";
+import { Note } from "../types";
 
 export const extractCourseInfo = async (query: string) => {
   const result = await generateText({
@@ -65,9 +67,20 @@ export const searchCourse = async (
       }
     );
 
+    if (!response.ok) {
+      throw new Error("Failed to search course");
+    }
+    const data = await response.json();
+
+    const notes = await Promise.all(
+      data.map(async (tag: { note_id: string; tag: string }) => {
+        return await getNoteData(tag.note_id, token);
+      })
+    );
+
     return {
       status: "success",
-      data: await response.json(),
+      data: notes as Note[],
     };
   } catch (err) {
     console.error("Error uploading note:", err);

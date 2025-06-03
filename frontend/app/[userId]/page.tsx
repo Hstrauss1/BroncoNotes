@@ -9,7 +9,10 @@ export default async function DefaultPage() {
   } = await supabase.auth.getSession();
 
   if (!session) redirect("/signin");
-  const { access_token: token } = session;
+  const {
+    user: { id: userId },
+    access_token: token,
+  } = session;
 
   return (
     <div className="p-6 flex flex-col items-center justify-center h-full gap-12">
@@ -17,7 +20,7 @@ export default async function DefaultPage() {
         <h1>Welcome to the Notes App</h1>
         <p>Please select a user to view their notes.</p>
       </hgroup>
-      <SearchBar token={token} className="max-w-md" />
+      <SearchBar userId={userId} token={token} />
     </div>
   );
 }

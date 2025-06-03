@@ -1,6 +1,5 @@
 import { Note } from "@/app/types";
 import NoteLink from "@/components/ui/note-link";
-import Link from "next/link";
 import React from "react";
 
 export default async function ListLikeNotes({
@@ -41,10 +40,7 @@ export default async function ListLikeNotes({
         ))
       ) : (
         <div className="border border-dashed border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 col-span-2 p-4 rounded-xl min-h-34 flex items-center justify-center flex-col gap-3">
-          <p>You have no notes yet.</p>
-          <Link href={`/note/create`} className="link">
-            Create one now
-          </Link>
+          <p>You have no liked notes yet.</p>
         </div>
       )}
     </>
