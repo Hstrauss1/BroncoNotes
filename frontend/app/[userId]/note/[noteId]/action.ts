@@ -108,3 +108,42 @@ export const likeNote = async (formData: FormData, token: string) => {
   revalidatePath(`/note/${note_id}`);
   return result;
 };
+
+export const commentOnNote = async (formData: FormData, token: string) => {
+  const note_id = formData.get("note-id") as string;
+  const user_id = formData.get("user-id") as string;
+  const comment_text = formData.get("comment") as string;
+
+  if (!user_id || !note_id || !comment_text) {
+    return {
+      status: "error",
+      error: "User ID, Note ID, and comment text are required",
+    };
+  }
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/comment_on_note`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        user_id,
+        note_id,
+        comment_text,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("Error commenting on note:", errorText);
+    throw new Error(
+      `Failed to comment on note: ${errorText || "Unknown error"}`
+    );
+  }
+
+  return await response.json();
+};
