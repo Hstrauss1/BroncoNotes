@@ -80,6 +80,15 @@ def check_points(user_id, note_id):
 def like_note(user_id, note_id):
     exists = g.supabase_client.table("Likes").select("*").eq("user_id", user_id).eq("note_id", note_id).execute()
 
+    note_response = g.supabase_client.table("Note") \
+        .select("user_id") \
+        .eq("note_id", note_id) \
+        .single() \
+        .execute()
+    
+    if not note_response.data:
+        raise Exception("Note not found.")
+    
     if exists.data:
         raise Exception("User already liked this note.")
 
@@ -88,19 +97,17 @@ def like_note(user_id, note_id):
         "user_id": user_id
     }).execute()
 
-    note_response = g.supabase_client.table("Note") \
-        .select("user_id") \
-        .eq("note_id", note_id) \
-        .single() \
-        .execute()
-
-    if not note_response.data:
-        raise Exception("Note not found.")
-
+    
     note_user_id = note_response.data["user_id"]
 
     if user_id == note_user_id:
         raise Exception("Users cannot like their own notes.")
+    
+    current_votes = note_response.data.get("votes", 0)
+    g.supabase_client.table("Note") \
+        .update({"votes": current_votes + 1}) \
+        .eq("note_id", note_id) \
+        .execute()
     
     update_note_cost(note_id)
     update_user_points(note_user_id)
