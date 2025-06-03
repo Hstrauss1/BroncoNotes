@@ -11,16 +11,22 @@ import { Note } from "@/app/types";
 export const CommentForm = ({
   noteId,
   session,
+  noteOwnerId,
   className,
 }: {
   noteId: Note["note_id"];
   session: Session;
+  noteOwnerId: string;
   className?: string;
 }) => {
   const {
     user: { id: userId },
     access_token: token,
   } = session;
+
+  if (userId === noteOwnerId) {
+    return null;
+  }
 
   const [state, commentAction, loading] = useActionState(
     async (_: unknown, formData: FormData) => {

@@ -1,8 +1,7 @@
 import React from "react";
-import Image from "next/image";
+import { FileUp, Lock, MessageCircle, Star, Heart, Stars } from "lucide-react";
 import Logo from "../../../public/Notex_Logo.svg";
-import Create from "../../../public/create_photo.png";
-import Note from "../../../public/notes-image.png";
+import Image from "next/image";
 
 export default function OnboardingPage() {
   return (
@@ -19,8 +18,8 @@ export default function OnboardingPage() {
           </div>
         </div>
         <div className=" w-full flex items-center justify-between p-3 pt-7">
-          <div className="w-2/3">
-            <h2 className="font-semibold text-xl"> Upload Notes for Point</h2>
+          <div className="w-5/6">
+            <h2 className="font-semibold text-xl"> Upload Your Notes</h2>
             <p className="text-sm">
               Click the Create tab in the sidebar. Enter your note title (e.g.,
               “Fall quarter 2024”) and course name (e.g., “CSEN 146”). Then
@@ -29,17 +28,11 @@ export default function OnboardingPage() {
               earn 1 point for each note you upload.
             </p>
           </div>
-
-          <Image
-            src={Create}
-            className="w-52 rotate-3 shadow-md rounded-2xl"
-            alt="Create Notes"
-          />
+          <FileUp className="w-18 h-18 text-red-500 mt-1" />
         </div>
         <div className=" w-full flex items-center justify-between p-3 pt-6">
-          <div className="w-2/3">
+          <div className="w-5/6">
             <h2 className="font-semibold text-xl">
-              {" "}
               Unlock to View other Notes
             </h2>
             <p className="text-sm">
@@ -51,15 +44,10 @@ export default function OnboardingPage() {
               unlock and view others’ notes.
             </p>
           </div>
-
-          <Image
-            src={Note}
-            className="w-44 -rotate-4 shadow-md rounded-2xl"
-            alt="Create Notes"
-          />
+          <Lock className="w-18 h-18 text-neutral-700 dark:text-neutral-200 mt-1" />
         </div>
         <div className=" w-full flex items-center justify-between p-3 pt-6">
-          <div className="w-2/3">
+          <div className="w-5/6">
             <h2 className="font-semibold text-xl"> Comment and Rate Notes</h2>
             <p className="text-sm">
               You can comment on and rate notes you unlock. This helps other
@@ -69,16 +57,13 @@ export default function OnboardingPage() {
               title. Your feedback is valuable to the community!
             </p>
           </div>
-          <Image
-            src={Create}
-            className="w-52 rotate-3 shadow-md rounded-2xl"
-            alt="Create Notes"
-          />
+          <div className="flex gap-4 items-center">
+            <MessageCircle className="w-18 h-18 text-blue-500 mt-1" />
+          </div>
         </div>
         <div className=" w-full flex items-center justify-between p-3 pt-6">
-          <div className="w-2/3">
+          <div className="w-5/6">
             <h2 className="font-semibold text-xl">
-              {" "}
               Create Like Notes Collection
             </h2>
             <p className="text-sm">
@@ -89,11 +74,21 @@ export default function OnboardingPage() {
               unlocked it.
             </p>
           </div>
-          <Image
-            src={Create}
-            className="w-52 -rotate-3 shadow-md rounded-2xl"
-            alt="Create Notes"
-          />
+          <Heart className="w-18 h-18 text-pink-500 mt-1" />
+        </div>
+        <div className="w-full flex items-center justify-between p-3 pt-6">
+          <div className="w-5/6">
+            <h2 className="font-semibold text-xl">Engage and Earn Points</h2>
+            <p className="text-sm">
+              At Notex, we believe in fostering an active and supportive
+              community. To encourage meaningful participation, you will earn 1
+              point each time you leave a comment on someone else’s note. This
+              helps create a vibrant environment where users share feedback, ask
+              questions, and help each other grow. So don’t hesitate to
+              engage—your contributions are valued and rewarded!
+            </p>
+          </div>
+          <Star className="w-18 h-18 text-yellow-400 mt-1" />
         </div>
       </div>
     </section>
