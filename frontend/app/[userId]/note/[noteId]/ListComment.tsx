@@ -25,7 +25,6 @@ export default async function ListComment({
   const note = await getNoteData(noteId, token);
   const noteOwnerId = note.user_id;
   const comments = await getNoteComments(noteId, user_id, token);
-  console.log("comments", comments);
 
   return (
     <>
@@ -33,7 +32,6 @@ export default async function ListComment({
         <CommentForm
           noteId={noteId}
           session={session}
-          noteOwnerId={noteOwnerId}
           className="pb-2 col-span-2"
         />
       )}
