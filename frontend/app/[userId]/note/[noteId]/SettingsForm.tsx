@@ -59,7 +59,7 @@ export default function SettingsForm({
           Save Changes
         </Button>
       </form>
-      <hr />
+      <hr className="my-2" />
       <form className="grid gap-6" action={deleteNoteAction}>
         <input type="hidden" name="noteId" value={note.note_id} />
         <Button
