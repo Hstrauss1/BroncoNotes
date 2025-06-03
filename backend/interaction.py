@@ -348,3 +348,25 @@ def has_user_liked_note(user_id, note_id):
         .execute()
 
     return bool(response.data)
+
+def search_tags(query: str):
+    print(f"Searching tags with query: {query}")
+    if not query:
+        raise ValueError("Query string is empty")
+
+    # Normalize the query
+    normalized_query = query.strip().replace(" ", "-").lower()
+
+    try:
+        response = (
+            g.supabase_client
+            .table("Tags")  # Use exact table name if it's "Tags" (case-sensitive)
+            .select("*")
+            .ilike("tag", f"%{normalized_query}%")
+            .execute()
+        )
+    except Exception as e:
+        raise Exception(f"Supabase query failed: {str(e)}")
+
+    return response.data  # This is where the results live
+

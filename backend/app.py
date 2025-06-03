@@ -5,7 +5,7 @@ from flask.helpers import abort
 from note import create_note, fetch_note_comments, fetch_note_ids_by_user, fetch_pdf_from_storage, upload_pdf_to_bucket, fetch_note_by_id, delete_note, update_note_cost_from_likes, update_note_title, fetch_unlocked_note_ids_by_user
 from auth import authenticate_request
 from user import fetch_user_by_id, get_or_create_user
-from interaction import like_note, comment_note, check_points, update_note_cost, update_user_points, add_tag, get_tags, get_liked_notes, get_notes_by_tag, get_notes_by_tags_match, update_tag, delete_tag, is_note_unlocked, has_user_liked_note, InsufficientPointsError
+from interaction import like_note, comment_note, check_points, update_note_cost, update_user_points, add_tag, get_tags, get_liked_notes, get_notes_by_tag, get_notes_by_tags_match, update_tag, delete_tag, is_note_unlocked, has_user_liked_note, InsufficientPointsError, search_tags
 
 app = Flask(__name__)
 
@@ -408,6 +408,22 @@ def is_note_liked_endpoint():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route("/search", methods=["GET"])
+def search_endpoint():
+    query = request.args.get("q", "").strip()
+
+    if not query:
+        return jsonify({"error": "Missing query parameter"}), 400
+
+    try:
+        results = search_tags(query)
+        return jsonify(results)
+    except ValueError as ve:
+        return jsonify({"error": str(ve)}), 400
+    except Exception as e:
+        return jsonify({"error": "Internal server error", "details": str(e)}), 500
+
 
 # Run app
 if __name__ == "__main__":
