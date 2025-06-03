@@ -1,6 +1,6 @@
 import { Comment } from "@/components/ui/comment";
 import React from "react";
-import { getNoteComments } from "./getNoteData";
+import { getNoteComments, getNoteData } from "./getNoteData";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Session } from "@supabase/supabase-js";
 import { CommentForm } from "./CommentForm";
@@ -22,16 +22,18 @@ export default async function ListComment({
     user: { id: user_id },
     access_token: token,
   } = session;
-  // const { user_id } = await getNoteData(noteId, token);
+  const note = await getNoteData(noteId, token);
+  const noteOwnerId = note.user_id;
   const comments = await getNoteComments(noteId, user_id, token);
   console.log("comments", comments);
 
   return (
     <>
-      {!comments?.user_comment && (
+      {user_id !== noteOwnerId && !comments?.user_comment && (
         <CommentForm
           noteId={noteId}
           session={session}
+          noteOwnerId={noteOwnerId}
           className="pb-2 col-span-2"
         />
       )}
