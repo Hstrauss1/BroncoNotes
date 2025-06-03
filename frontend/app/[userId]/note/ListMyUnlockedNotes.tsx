@@ -1,9 +1,8 @@
 import { Note } from "@/app/types";
 import NoteLink from "@/components/ui/note-link";
-import Link from "next/link";
 import React from "react";
 
-export default async function ListMyNotes({
+export default async function ListMyUnlockedNotes({
   userId,
   token,
 }: {
@@ -11,7 +10,7 @@ export default async function ListMyNotes({
   token: string;
 }) {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/user/${userId}/notes`,
+    `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/user/${userId}/unlocked-notes`,
     {
       method: "GET",
       headers: {
@@ -39,11 +38,8 @@ export default async function ListMyNotes({
           <NoteLink key={n.note_id} note={n} token={token} />
         ))
       ) : (
-        <div className="border border-dashed border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 col-span-2 p-4 rounded-xl min-h-34 flex items-center justify-center flex-col gap-3">
-          <p>You have no notes yet.</p>
-          <Link href={`/note/create`} className="link">
-            Create one now
-          </Link>
+        <div className="border border-dashed border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 col-span-2 p-4 rounded-xl min-h-34 flex items-center justify-center">
+          No notes found.
         </div>
       )}
     </>

@@ -256,3 +256,23 @@ def fetch_note_ids_by_user(user_id: str):
         return []
     data = getattr(response, "data", None) or []
     return [item["note_id"] for item in data if "note_id" in item]
+
+def fetch_unlocked_note_ids_by_user(user_id: str):
+    if not isinstance(user_id, str) or not user_id:
+        raise TypeError("Invalid user_id")
+    try:
+        response = (
+            g.supabase_client
+            .table("Unlocked")
+            .select("note_id")
+            .eq("user_id", user_id)
+            .execute()
+        )
+    except APIError as e:
+        logging.error(f"Supabase API error fetching unlocked note ids for user {user_id}: {e.code} – {e.message}")
+        return []
+    except Exception as e:
+        logging.error(f"Unexpected error fetching unlocked note ids for user {user_id}: {e}")
+        return []
+    data = getattr(response, "data", None) or []
+    return [item["note_id"] for item in data if "note_id" in item]

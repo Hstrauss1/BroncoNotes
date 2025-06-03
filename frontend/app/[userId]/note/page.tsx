@@ -2,7 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import ListMyNotes from "./ListMyNotes";
 import { Suspense } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { NoteLinkSkeleton } from "@/components/ui/note-link";
+import ListMyUnlockedNotes from "./ListMyUnlockedNotes";
 
 export default async function NotePage({
   params,
@@ -17,26 +18,37 @@ export default async function NotePage({
 
   return (
     <section className="w-full h-full">
-      <hgroup className="wm-auto">
-        <h1 className="pt-10 pb-5">My Notes</h1>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Suspense
-            fallback={Array(8)
-              .fill(0)
-              .map((_, index) => (
-                <Skeleton
-                  key={index}
-                  className="p-4 bg-white dark:bg-neutral-800 border border-neutral-300/50 dark:border-neutral-700/50 rounded-xl shadow-xs flex flex-col gap-2 h-32"
-                >
-                  <Skeleton className="h-4 rounded w-3/4" />
-                  <Skeleton className="h-3 rounded w-1/2" />
-                </Skeleton>
-              ))}
-          >
-            <ListMyNotes userId={userId} token={token} />
-          </Suspense>
-        </div>
-      </hgroup>
+      <div className="wm-auto flex flex-col gap-6 pt-10">
+        <h1>Notes</h1>
+        <section className="flex flex-col gap-3">
+          <h2>My Notes</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Suspense
+              fallback={Array(4)
+                .fill(0)
+                .map((_, index) => (
+                  <NoteLinkSkeleton key={index} />
+                ))}
+            >
+              <ListMyNotes userId={userId} token={token} />
+            </Suspense>
+          </div>
+        </section>
+        <section className="flex flex-col gap-3">
+          <h2>Unlocked Notes</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Suspense
+              fallback={Array(4)
+                .fill(0)
+                .map((_, index) => (
+                  <NoteLinkSkeleton key={index} />
+                ))}
+            >
+              <ListMyUnlockedNotes userId={userId} token={token} />
+            </Suspense>
+          </div>
+        </section>
+      </div>
     </section>
   );
 }
