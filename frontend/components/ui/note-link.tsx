@@ -4,6 +4,16 @@ import Link from "next/link";
 import React from "react";
 import Tag from "./tag";
 import PdfThumbnail from "./PdfThumbnail";
+import { Skeleton } from "./skeleton";
+
+export async function NoteLinkSkeleton() {
+  return (
+    <Skeleton className="p-4 bg-white dark:bg-neutral-800 border border-neutral-300/50 dark:border-neutral-700/50 rounded-xl shadow-xs flex flex-col gap-2 h-32">
+      <Skeleton className="h-4 rounded w-3/4" />
+      <Skeleton className="h-3 rounded w-1/2" />
+    </Skeleton>
+  );
+}
 
 export default async function NoteLink({
   note,

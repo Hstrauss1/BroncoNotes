@@ -17,6 +17,8 @@ import PdfThumbnail from "@/components/ui/PdfThumbnail";
 import { Skeleton } from "@/components/ui/skeleton";
 import UnlockNote from "./UnlockNote";
 import { Session } from "@supabase/supabase-js";
+import { isNoteUnlocked } from "./action";
+import LikeNote from "./LikeNote";
 
 export function NoteInfoSkeleton() {
   return (
@@ -55,6 +57,8 @@ export default async function NoteInfo({
   const base64 = Buffer.from(arrayBuffer).toString("base64");
   const pdfUrl = `data:application/pdf;base64,${base64}`;
 
+  const { is_unlocked } = await isNoteUnlocked(note.note_id, userId, token);
+
   return (
     <>
       <div className="flex flex-col gap-6 h-fit">
@@ -91,10 +95,20 @@ export default async function NoteInfo({
                 </Button>
               </Link>
             </>
+          ) : is_unlocked ? (
+            <>
+              <Link href={`/${note.user_id}/note/${note.note_id}/view`}>
+                <Button variant="secondary" size="sm">
+                  <Eye />
+                  View Note
+                </Button>
+              </Link>
+              <LikeNote note={note} session={session} />
+            </>
           ) : (
             <>
               <UnlockNote note={note} session={session} />
-              <Button variant="secondary" size="sm">
+              <Button variant="secondary" size="sm" disabled>
                 <ThumbsUp />
                 {note.votes} Likes
               </Button>
