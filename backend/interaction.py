@@ -339,3 +339,12 @@ def is_note_unlocked(user_id, note_id):
         .execute()
 
     return bool(exists.data)
+
+def has_user_liked_note(user_id, note_id):
+    response = g.supabase_client.table("Likes") \
+        .select("id") \
+        .eq("user_id", user_id) \
+        .eq("note_id", note_id) \
+        .execute()
+
+    return bool(response.data)
