@@ -3,6 +3,7 @@ import {
   AppWindow,
   File,
   Heart,
+  Home,
   LogOut,
   MoonIcon,
   MoreHorizontal,
@@ -40,6 +41,11 @@ const items = [
     icon: PlusIcon,
   },
   {
+    title: "Dashboard",
+    url: "",
+    icon: Home,
+  },
+  {
     title: "Notes",
     url: "note",
     icon: File,
@@ -64,7 +70,7 @@ export function AppSidebar({ user }: { user: Account }) {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link href={`/${user.user_id}/${item.url}`}>
+                    <Link prefetch href={`/${user.user_id}/${item.url}`}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>
