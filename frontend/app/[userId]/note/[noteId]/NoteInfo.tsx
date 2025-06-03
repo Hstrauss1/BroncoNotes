@@ -18,6 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import UnlockNote from "./UnlockNote";
 import { Session } from "@supabase/supabase-js";
 import { isNoteUnlocked } from "./action";
+import LikeNote from "./LikeNote";
 
 export function NoteInfoSkeleton() {
   return (
@@ -102,10 +103,7 @@ export default async function NoteInfo({
                   View Note
                 </Button>
               </Link>
-              <Button variant="secondary" size="sm">
-                <ThumbsUp />
-                {note.votes} Likes
-              </Button>
+              <LikeNote note={note} session={session} />
             </>
           ) : (
             <>
