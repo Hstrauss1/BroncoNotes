@@ -2,7 +2,7 @@ import io
 import os
 from flask import Flask, jsonify, request, send_file, make_response
 from flask.helpers import abort
-from note import create_note, fetch_note_comments, fetch_note_ids_by_user, fetch_pdf_from_storage, upload_pdf_to_bucket, fetch_note_by_id, delete_note, update_note_cost_from_likes, update_note_title,fetch_unlocked_note_ids_by_user
+from note import create_note, fetch_note_comments, fetch_note_ids_by_user, fetch_pdf_from_storage, upload_pdf_to_bucket, fetch_note_by_id, delete_note, update_note_cost_from_likes, update_note_title, fetch_unlocked_note_ids_by_user
 from auth import authenticate_request
 from user import fetch_user_by_id, get_or_create_user
 from interaction import like_note, comment_note, check_points, update_note_cost, update_user_points, add_tag, get_tags, get_liked_notes, get_notes_by_tag, get_notes_by_tags_match, update_tag, delete_tag, is_note_unlocked, InsufficientPointsError
