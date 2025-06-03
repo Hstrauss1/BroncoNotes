@@ -5,7 +5,7 @@ from flask.helpers import abort
 from note import create_note, fetch_note_comments, fetch_note_ids_by_user, fetch_pdf_from_storage, upload_pdf_to_bucket, fetch_note_by_id, delete_note, update_note_cost_from_likes, update_note_title, fetch_unlocked_note_ids_by_user
 from auth import authenticate_request
 from user import fetch_user_by_id, get_or_create_user
-from interaction import like_note, comment_note, check_points, update_note_cost, update_user_points, add_tag, get_tags, get_liked_notes, get_notes_by_tag, get_notes_by_tags_match, update_tag, delete_tag, is_note_unlocked, InsufficientPointsError
+from interaction import like_note, comment_note, check_points, update_note_cost, update_user_points, add_tag, get_tags, get_liked_notes, get_notes_by_tag, get_notes_by_tags_match, update_tag, delete_tag, is_note_unlocked, has_user_liked_note, InsufficientPointsError
 
 app = Flask(__name__)
 
@@ -385,6 +385,25 @@ def is_note_unlocked_endpoint():
             "note_id": note_id,
             "user_id": user_id,
             "is_unlocked": unlocked
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/is_note_liked', methods=['GET'])
+def is_note_liked_endpoint():
+    try:
+        user_id = request.args.get('user_id')
+        note_id = request.args.get('note_id')
+
+        if not user_id or not note_id:
+            return jsonify({"error": "Missing user_id or note_id"}), 400
+
+        liked = has_user_liked_note(user_id, note_id) 
+        return jsonify({
+            "note_id": note_id,
+            "user_id": user_id,
+            "is_liked": liked
         }), 200
 
     except Exception as e:
