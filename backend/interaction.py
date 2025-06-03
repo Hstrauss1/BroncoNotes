@@ -116,10 +116,7 @@ def like_note(user_id, note_id):
 def comment_note(user_id, note_id, comment_text):
     exists = g.supabase_client.table("Comment").select("*") \
         .eq("note_id", note_id).eq("user_id", user_id).execute()
-
-    if exists.data:
-        raise Exception("Comment already exists for this user and note.")
-
+    
     note_response = g.supabase_client.table("Note") \
         .select("user_id") \
         .eq("note_id", note_id) \
@@ -128,6 +125,9 @@ def comment_note(user_id, note_id, comment_text):
 
     if not note_response.data:
         raise Exception("Note not found.")
+
+    if exists.data:
+        raise Exception("Comment already exists for this user and note.")
 
     note_user_id = note_response.data["user_id"]
 
@@ -141,6 +141,12 @@ def comment_note(user_id, note_id, comment_text):
         "review": comment_text,
         "create_time": create_timestamp
     }).execute()
+
+    current_votes = note_response.data.get("votes", 0)
+    g.supabase_client.table("Note") \
+        .update({"votes": current_votes + 1}) \
+        .eq("note_id", note_id) \
+        .execute()
 
     return response.data
 
