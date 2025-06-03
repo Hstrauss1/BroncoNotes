@@ -63,7 +63,8 @@ def create_note(user_id: str, title: str, storage_path: str) -> str:
             "user_id":      user_id,
             "votes":        0,
             "title":        title,
-            "storage_path": storage_path
+            "storage_path": storage_path,
+            "cost":10,
         }).execute()
 
     except Exception as e:

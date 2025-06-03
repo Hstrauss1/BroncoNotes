@@ -17,8 +17,8 @@ export default async function DefaultPage() {
   return (
     <div className="p-6 flex flex-col items-center justify-center h-full gap-12">
       <hgroup className="flex flex-col items-center gap-2">
-        <h1>Welcome to the Notes App</h1>
-        <p>Please select a user to view their notes.</p>
+        <h1>Welcome to the Notex</h1>
+        <p>Use natural language to search for notes.</p>
       </hgroup>
       <SearchBar userId={userId} token={token} />
     </div>
