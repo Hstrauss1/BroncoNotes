@@ -2,6 +2,7 @@ import PdfViewer from "@/components/PdfViewer";
 import { getNoteData, getNotePdfBlob } from "../getNoteData";
 import { createClient } from "@/lib/supabase/server";
 import { isNoteUnlocked } from "../action";
+import { LockIcon } from "lucide-react";
 
 export default async function ViewPage({
   params,
@@ -29,14 +30,20 @@ export default async function ViewPage({
   const base64 = Buffer.from(arrayBuffer).toString("base64");
   const pdfUrl = `data:application/pdf;base64,${base64}`;
 
-  const { is_unlocked } = await isNoteUnlocked(note.note_id, userId, token);
+  const { is_unlocked: unlockedFromAction } = await isNoteUnlocked(
+    note.note_id,
+    userId,
+    token
+  );
+
+  const is_unlocked = note.user_id === userId ? true : unlockedFromAction;
 
   if (!is_unlocked) {
     return (
       <div className="flex flex-col items-center justify-center gap-4 h-full">
+        <LockIcon className="w-14 h-14 text-neutral-800 dark:text-neutral-300" />
         <h1>Note is locked</h1>
         <p>Please unlock the note to view its content.</p>
-        {/* Add your unlock note component here */}
       </div>
     );
   }
