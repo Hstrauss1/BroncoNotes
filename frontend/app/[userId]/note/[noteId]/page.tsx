@@ -2,7 +2,6 @@ import { createClient } from "@/lib/supabase/server";
 import { Suspense } from "react";
 import NoteInfo, { NoteInfoSkeleton } from "./NoteInfo";
 import ListComment, { ListCommentSkeleton } from "./ListComment";
-import { CommentForm } from "./CommentForm";
 
 export default async function NotePage({
   params,
@@ -31,11 +30,6 @@ export default async function NotePage({
         <div className="wm-auto py-12 flex-1 flex flex-col h-full">
           <div>
             <h4>Reviews</h4>
-            <CommentForm
-              noteId={noteId}
-              session={session}
-              className="pt-4 pb-2"
-            />
             <div className="grid grid-cols-2 gap-2 py-4">
               <Suspense fallback={<ListCommentSkeleton />}>
                 <ListComment noteId={noteId} session={session} />

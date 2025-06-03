@@ -144,6 +144,6 @@ export const commentOnNote = async (formData: FormData, token: string) => {
       `Failed to comment on note: ${errorText || "Unknown error"}`
     );
   }
-
+  revalidatePath(`/note/${note_id}`);
   return await response.json();
 };

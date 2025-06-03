@@ -1,8 +1,9 @@
 import { Comment } from "@/components/ui/comment";
 import React from "react";
-import { getNoteComments, getNoteData } from "./getNoteData";
+import { getNoteComments } from "./getNoteData";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Session } from "@supabase/supabase-js";
+import { CommentForm } from "./CommentForm";
 
 export function ListCommentSkeleton() {
   return Array.from({ length: 5 }).map((_, i) => (
@@ -17,12 +18,23 @@ export default async function ListComment({
   noteId: string;
   session: Session;
 }) {
-  const { access_token: token } = session;
-  const { user_id } = await getNoteData(noteId, token);
+  const {
+    user: { id: user_id },
+    access_token: token,
+  } = session;
+  // const { user_id } = await getNoteData(noteId, token);
   const comments = await getNoteComments(noteId, user_id, token);
+  console.log("comments", comments);
 
   return (
     <>
+      {!comments?.user_comment && (
+        <CommentForm
+          noteId={noteId}
+          session={session}
+          className="pb-2 col-span-2"
+        />
+      )}
       {comments?.user_comment && (
         <Comment
           className="border-neutral-300/70"
