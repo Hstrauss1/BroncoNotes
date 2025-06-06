@@ -332,13 +332,13 @@ def delete_tag(note_id, tag):
     return response
 
 def is_note_unlocked(user_id, note_id):
-    exists = g.supabase_client.table("Unlocked") \
+    response = g.supabase_client.table("Unlocked") \
         .select("*") \
         .eq("user_id", user_id) \
         .eq("note_id", note_id) \
         .execute()
 
-    return bool(exists.data)
+    return bool(response.data)
 
 def has_user_liked_note(user_id, note_id):
     response = g.supabase_client.table("Likes") \
@@ -354,13 +354,12 @@ def search_tags(query: str):
     if not query:
         raise ValueError("Query string is empty")
 
-    # Normalize the query
     normalized_query = query.strip().replace(" ", "-").lower()
-
+    
     try:
         response = (
             g.supabase_client
-            .table("Tags")  # Use exact table name if it's "Tags" (case-sensitive)
+            .table("Tags")
             .select("*")
             .ilike("tag", f"%{normalized_query}%")
             .execute()
@@ -368,5 +367,5 @@ def search_tags(query: str):
     except Exception as e:
         raise Exception(f"Supabase query failed: {str(e)}")
 
-    return response.data  # This is where the results live
+    return response.data 
 
